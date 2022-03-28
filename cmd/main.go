@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"net/http"
 
 	"github.com/dbrainhub/dbrainhub/configs"
 	"github.com/dbrainhub/dbrainhub/router"
@@ -22,8 +23,7 @@ func main() {
 
 	fmt.Printf("[INFO] Start server at: %s \n", config.Address)
 
-	httpRouter := router.NewDefaultRouter(configs.GetGlobalConfig().Address)
-	if err := httpRouter.Run(); err != nil {
-		logger.Fatal("http server err: %v", err)
+	if err := http.ListenAndServe(config.Address, router.NewDefaultHandler()); err != nil {
+		logger.Errorf("http ListenAndServe err: %v", err)
 	}
 }

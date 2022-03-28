@@ -1,8 +1,0 @@
-{
-    "address": ":9191",
-    "log_info": {
-        "level": "info",
-        "log_dir": "/home/lyp/lyp/log/",
-        "name": "serv.log"
-    }
-}

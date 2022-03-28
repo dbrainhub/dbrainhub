@@ -1,20 +1,21 @@
 package configs
 
 import (
-	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"log"
 	"os"
+
+	"github.com/BurntSushi/toml"
 )
 
 type GlobalConfig struct {
-	Address string `json:"address"`
+	Address string `toml:"address"`
 	LogInfo struct {
-		Level  string `json:"level"`
-		LogDir string `json:"log_dir"`
-		Name   string `json:"name"`
-	} `json:"log_info"`
+		Level  string `toml:"level"`
+		LogDir string `toml:"log_dir"`
+		Name   string `toml:"name"`
+	} `toml:"log_info"`
 }
 
 var globalConfig *GlobalConfig
@@ -40,14 +41,14 @@ func loadConfigFromFile(path string) (*GlobalConfig, error) {
 	}
 
 	var config GlobalConfig
-	err = json.Unmarshal(bytes, &config)
+	err = toml.Unmarshal(bytes, &config)
 	return &config, err
 }
 
 // 按 用户指定 -> 环境变量 -> 默认值 的方式获取配置文件路径。
 func getConfigPath(path string) string {
 	const ConfigPathEnv = "config_path"
-	const ConfigPath = "config.json"
+	const ConfigPath = "config.yaml"
 
 	if path != "" {
 		return path

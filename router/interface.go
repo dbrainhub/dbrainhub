@@ -1,12 +1,10 @@
 package router
 
-type HTTPRouter interface {
-	Run() error
-}
+import "net/http"
 
-func NewDefaultRouter(addr string) HTTPRouter {
-	var router defaultRouter
+func NewDefaultHandler() http.Handler {
+	var router ginRouter
 
-	router.Init(addr)
-	return &router
+	router.Init()
+	return router.GetHandler()
 }
