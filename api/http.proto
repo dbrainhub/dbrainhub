@@ -4,7 +4,7 @@ package api;
 
 option go_package = "./api";
 
-import "google/api/annotations.proto";
+//run `protoc  -I ./ --proto_path=../ --go_out=../ ./http.proto`
 
 message HelloWorldRequest {
     optional string ping = 1;
@@ -12,12 +12,4 @@ message HelloWorldRequest {
 
 message HelloWorldResponse {
     string pang = 1;
-}
-
-service HttpService {
-    rpc Hello(HelloWorldRequest) returns (HelloWorldResponse) {
-        option (google.api.http) = {
-            post: '/hello_world'
-        };
-  }
 }
