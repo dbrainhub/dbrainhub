@@ -4,25 +4,28 @@ import (
 	"flag"
 	"fmt"
 	"net/http"
+	"os"
 
 	"github.com/dbrainhub/dbrainhub/configs"
 	"github.com/dbrainhub/dbrainhub/router"
 	"github.com/dbrainhub/dbrainhub/utils/logger"
 )
 
-var configFilePath = flag.String("config", "", "config file path")
+var configFilePath = flag.String("config", "", "config file path, refer to example_config.toml")
 
 func main() {
-	fmt.Printf("Hello World! \n")
-
 	flag.Parse()
+	if *configFilePath == "" {
+		fmt.Fprintf(os.Stderr, "ERROR: config file required\n")
+		os.Exit(1)
+	}
+
 	configs.InitConfigOrPanic(*configFilePath)
 
 	config := configs.GetGlobalConfig()
 	logger.InitLog(config.LogInfo.LogDir, config.LogInfo.Name, config.LogInfo.Level)
 
-	fmt.Printf("[INFO] Start server at: %s \n", config.Address)
-
+	logger.Infof("Start server at: %s", config.Address)
 	if err := http.ListenAndServe(config.Address, router.NewDefaultHandler()); err != nil {
 		logger.Errorf("http ListenAndServe err: %v", err)
 	}
