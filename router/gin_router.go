@@ -9,6 +9,8 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+type Handler func(c *gin.Context) (interface{}, error)
+
 type ginRouter struct {
 	server *gin.Engine
 }
@@ -18,7 +20,7 @@ func (g *ginRouter) Init() {
 	g.server.Use(StatMiddleware)
 	g.server.Use(gin.Recovery())
 
-	g.server.POST("/hello_world", handler.SayHello)
+	g.server.POST("/hello_world", handlerWapper(handler.SayHello))
 }
 
 func (g *ginRouter) GetHandler() http.Handler {
@@ -31,4 +33,15 @@ func StatMiddleware(c *gin.Context) {
 
 	duration := time.Now().UnixNano() - st
 	logger.Infof("%s %s duration: %dus", c.Request.Method, c.Request.URL.Path, duration/10e3)
+}
+
+func handlerWapper(fun Handler) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		res, err := fun(c)
+		if err != nil {
+			handler.NewApiError(err).RenderJson(c)
+		} else {
+			c.JSON(http.StatusOK, res)
+		}
+	}
 }
