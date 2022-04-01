@@ -12,6 +12,13 @@ const (
 	MinCustomErrorCode = 1000
 )
 
+const (
+	// 业务错误码从 MinCustomErrorCode 开始，与 HTTP status code 隔开。
+	// Code < MinCustomErrorCode : http 返回错误码 Code
+	// Code >= MinCustomErrorCode: http 返回错误码 http.StatusBadRequest(400)
+	MinCustomErrorCode = 1000
+)
+
 type (
 	ErrInfo struct {
 		Code int32  `json:"code"`
