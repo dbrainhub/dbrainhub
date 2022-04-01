@@ -58,6 +58,7 @@ func (c *confGenImpl) CanGenerateModuleConf(conf *model.SlowLogModuleConf) error
 			return nil
 		}
 	}
+	logger.Infof("yml cannot configure input path, there is no '%s' placeholder", PlaceHolderForInputPath)
 	return errors.FileBeatConfError("cannot configure input path")
 }
 
