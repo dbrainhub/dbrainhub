@@ -2,11 +2,11 @@ package filebeat
 
 import (
 	"fmt"
-	"github.com/dbrainhub/dbrainhub/model"
-	"github.com/dbrainhub/dbrainhub/utils/logger"
 	"strings"
 
 	"github.com/dbrainhub/dbrainhub/errors"
+	"github.com/dbrainhub/dbrainhub/model"
+	"github.com/dbrainhub/dbrainhub/utils/logger"
 )
 
 type (

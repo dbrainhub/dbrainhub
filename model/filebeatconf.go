@@ -2,7 +2,6 @@ package model
 
 type (
 	FilebeatConf struct {
-		// 考虑配置本身复杂性，直接使用 filebeat 的配置结构，这个不是全量配置，但已包含大多数配置。
 		Inputs        []*FilebeatInput `config:"filebeat.inputs"`
 		HttpInfo      HttpInfo         `config:"http"`
 		RainhubOutput DBRainhubOutput  `config:"output.dbrainhub"`

@@ -1,9 +1,9 @@
 package dao
 
 import (
-	"github.com/dbrainhub/dbrainhub/model"
 	"testing"
 
+	"github.com/dbrainhub/dbrainhub/model"
 	"github.com/stretchr/testify/assert"
 )
 
