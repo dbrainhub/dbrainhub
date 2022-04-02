@@ -11,6 +11,14 @@ import (
 
 type GlobalConfig struct {
 	Address string `toml:"address"`
+	DB      struct {
+		Dialect  string `toml:"dialect"`
+		User     string `toml:"user"`
+		Password string `toml:"password"`
+		Host     string `toml:"host"`
+		Port     int    `toml:"port"`
+		Database string `toml:"database"`
+	} `toml:"db"`
 	LogInfo struct {
 		Level  string `toml:"level"`
 		LogDir string `toml:"log_dir"`

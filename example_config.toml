@@ -1,5 +1,14 @@
 address = "127.0.0.1:1502"
 
+[db]
+# dialect should be mysql, postgres, mssql or sqlite
+dialect = "mysql"
+user = "dbrainhub"
+password = "a#l4qb+fa"
+host = "192.168.64.3"
+port = 3306
+database = "dbrainhub"
+
 [log_info]
 level = "debug"
 log_dir = "."

@@ -5,6 +5,8 @@ go 1.18
 require (
 	github.com/BurntSushi/toml v1.0.0
 	github.com/gin-gonic/gin v1.7.2-0.20220325004437-205bb8151cb7
+	github.com/go-sql-driver/mysql v1.6.0
+	github.com/jinzhu/gorm v1.9.16
 	github.com/natefinch/lumberjack v2.0.0+incompatible
 	github.com/pkg/sftp v1.13.4
 	github.com/stretchr/testify v1.7.0
@@ -21,6 +23,7 @@ require (
 	github.com/go-playground/validator/v10 v10.10.0 // indirect
 	github.com/goccy/go-json v0.9.5 // indirect
 	github.com/google/go-cmp v0.5.6 // indirect
+	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/kr/fs v0.1.0 // indirect
 	github.com/leodido/go-urn v1.2.1 // indirect

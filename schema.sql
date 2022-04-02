@@ -1,0 +1,21 @@
+CREATE DATABASE IF NOT EXISTS `dbrainhub`;
+
+CREATE TABLE IF NOT EXISTS `dbcluster` (
+  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `name` VARCHAR(64) NOT NULL,
+  `type` VARCHAR(32) NOT NULL,
+  `ct` INT NOT NULL,
+  `ut` INT NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE INDEX `unq_name` (`name`)
+) ENGINE=InnoDB DEFAULT CHARACTER SET utf8mb4;
+
+CREATE TABLE IF NOT EXISTS `dbcluster_member` (
+  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `cluster_id` INT UNSIGNED NOT NULL,
+  `ip` VARCHAR(16) NOT NULL,
+  `ct` INT NOT NULL,
+  `ut` INT NOT NULL,
+  PRIMARY KEY (`id`),
+  INDEX `idx_cluster_id` (`cluster_id`)
+) ENGINE=InnoDB DEFAULT CHARACTER SET utf8mb4;
