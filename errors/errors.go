@@ -33,6 +33,7 @@ func (err *ErrInfo) Error() string {
 	return string(res)
 }
 
+// 1000-2000 filebeat 相关错误码
 func FileBeatConfError(format string, a ...interface{}) *ErrInfo {
-	return newErrInfo(400, "filebeat-conf-error", fmt.Sprintf(format, a...))
+	return newErrInfo(1000, "filebeat-conf-error", fmt.Sprintf(format, a...))
 }

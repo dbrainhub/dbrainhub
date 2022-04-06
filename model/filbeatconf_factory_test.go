@@ -1,9 +1,8 @@
-package dao
+package model
 
 import (
 	"testing"
 
-	"github.com/dbrainhub/dbrainhub/model"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -75,7 +74,7 @@ var testModuleFileConf = `
 
 func TestGetModuleConf(t *testing.T) {
 	var factory filebeatConfFactory
-	conf, err := factory.NewSlowLogModuleConf(testModuleFileConf, model.InputModuleType)
+	conf, err := factory.NewSlowLogModuleConf(testModuleFileConf, InputModuleType)
 	assert.Nil(t, err)
 
 	assert.Equal(t, conf.Module, "mysql")

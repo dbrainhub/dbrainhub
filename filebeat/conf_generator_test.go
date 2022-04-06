@@ -4,7 +4,6 @@ import (
 	"testing"
 
 	"github.com/dbrainhub/dbrainhub/model"
-	"github.com/dbrainhub/dbrainhub/model/dao"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -15,7 +14,7 @@ output.dbrainhub:
   batch_size: 20480
   retry_limit: 5
   timeout: 2`
-	conf, err := dao.NewFileBeatConfFactory().NewFilebeatConf(confContent)
+	conf, err := model.NewFileBeatConfFactory().NewFilebeatConf(confContent)
 	assert.Nil(t, err)
 	assert.Error(t, NewConfGenerator("", nil).CanGenerateFilebeatConf(conf))
 }
@@ -27,7 +26,7 @@ output.dbrainhub:
   batch_size: 20480
   retry_limit: 5
   timeout: 2`
-	conf, err := dao.NewFileBeatConfFactory().NewFilebeatConf(confContent)
+	conf, err := model.NewFileBeatConfFactory().NewFilebeatConf(confContent)
 	assert.Nil(t, err)
 	assert.Nil(t, NewConfGenerator("", nil).CanGenerateFilebeatConf(conf))
 }
@@ -38,7 +37,7 @@ func TestConfGenImpl_CanGenerateModuleConf_Error(t *testing.T) {
   slowlog:
     enabled: true
     var.paths: ["/path/to/log/mysql/mysql-slow.log*"]`
-	conf, err := dao.NewFileBeatConfFactory().NewSlowLogModuleConf(confContent, model.InputModuleType)
+	conf, err := model.NewFileBeatConfFactory().NewSlowLogModuleConf(confContent, model.InputModuleType)
 	assert.Nil(t, err)
 	assert.Error(t, NewConfGenerator("", nil).CanGenerateModuleConf(conf))
 }
@@ -49,7 +48,7 @@ func TestConfGenImpl_CanGenerateModuleConf_True(t *testing.T) {
   slowlog:
     enabled: true
     var.paths: ["$input_path"]`
-	conf, err := dao.NewFileBeatConfFactory().NewSlowLogModuleConf(confContent, model.InputModuleType)
+	conf, err := model.NewFileBeatConfFactory().NewSlowLogModuleConf(confContent, model.InputModuleType)
 	assert.Nil(t, err)
 	assert.Nil(t, NewConfGenerator("", nil).CanGenerateModuleConf(conf))
 }

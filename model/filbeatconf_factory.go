@@ -1,16 +1,15 @@
-package dao
+package model
 
 import (
 	"github.com/dbrainhub/dbrainhub/errors"
-	"github.com/dbrainhub/dbrainhub/model"
 	"github.com/dbrainhub/dbrainhub/utils/logger"
 	"github.com/elastic/beats/v7/libbeat/common"
 )
 
 type (
 	FileBeatConfFactory interface {
-		NewFilebeatConf(confContent string) (*model.FilebeatConf, error)
-		NewSlowLogModuleConf(confContent string, moduleName string) (*model.SlowLogModuleConf, error)
+		NewFilebeatConf(confContent string) (*FilebeatConf, error)
+		NewSlowLogModuleConf(confContent string, moduleName string) (*SlowLogModuleConf, error)
 	}
 )
 
@@ -20,16 +19,16 @@ func NewFileBeatConfFactory() FileBeatConfFactory {
 
 type filebeatConfFactory struct{}
 
-func (f *filebeatConfFactory) NewFilebeatConf(confContent string) (*model.FilebeatConf, error) {
-	var res model.FilebeatConf
+func (f *filebeatConfFactory) NewFilebeatConf(confContent string) (*FilebeatConf, error) {
+	var res FilebeatConf
 	if err := f.parse(confContent, &res); err != nil {
 		return nil, err
 	}
 	return &res, nil
 }
 
-func (f *filebeatConfFactory) NewSlowLogModuleConf(confContent string, moduleName string) (*model.SlowLogModuleConf, error) {
-	var confs []*model.SlowLogModuleConf
+func (f *filebeatConfFactory) NewSlowLogModuleConf(confContent string, moduleName string) (*SlowLogModuleConf, error) {
+	var confs []*SlowLogModuleConf
 	if err := f.parse(confContent, &confs); err != nil {
 		return nil, err
 	}

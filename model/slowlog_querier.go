@@ -1,16 +1,20 @@
-package dao
+package model
 
 import (
 	"context"
 	"database/sql"
 
-	"github.com/dbrainhub/dbrainhub/model"
 	_ "github.com/go-sql-driver/mysql"
 )
 
 type (
 	SlowLogInfoQuerier interface {
-		Query(ctx context.Context) (*model.SlowLogInfo, error)
+		Query(ctx context.Context) (*SlowLogInfo, error)
+	}
+
+	SlowLogInfo struct {
+		IsOpen bool
+		Path   string
 	}
 )
 
@@ -24,8 +28,8 @@ type mysqlSlowLogInfoQuerier struct {
 	db *sql.DB
 }
 
-func (m *mysqlSlowLogInfoQuerier) Query(ctx context.Context) (*model.SlowLogInfo, error) {
-	var res model.SlowLogInfo
+func (m *mysqlSlowLogInfoQuerier) Query(ctx context.Context) (*SlowLogInfo, error) {
+	var res SlowLogInfo
 	var err error
 	res.IsOpen, err = m.querySlowLogIsOpen(ctx)
 	if err != nil {

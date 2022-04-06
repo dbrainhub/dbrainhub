@@ -3,7 +3,6 @@ package filebeat
 import (
 	"github.com/dbrainhub/dbrainhub/errors"
 	"github.com/dbrainhub/dbrainhub/model"
-	"github.com/dbrainhub/dbrainhub/model/dao"
 )
 
 type (
@@ -22,7 +21,7 @@ type confValidator struct {
 
 func (c *confValidator) ValidateFilebeatConf(template string) error {
 	// yaml parser
-	conf, err := dao.NewFileBeatConfFactory().NewFilebeatConf(template)
+	conf, err := model.NewFileBeatConfFactory().NewFilebeatConf(template)
 	if err != nil {
 		return err
 	}
@@ -40,7 +39,7 @@ func (c *confValidator) ValidateFilebeatConf(template string) error {
 
 func (c *confValidator) ValidateModuleConf(template string) error {
 	// yaml parser
-	conf, err := dao.NewFileBeatConfFactory().NewSlowLogModuleConf(template, model.InputModuleType)
+	conf, err := model.NewFileBeatConfFactory().NewSlowLogModuleConf(template, model.InputModuleType)
 	if err != nil {
 		return err
 	}
