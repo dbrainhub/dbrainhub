@@ -2,6 +2,7 @@ package errors
 
 import (
 	"encoding/json"
+	"fmt"
 )
 
 const (
@@ -19,7 +20,7 @@ type (
 	}
 )
 
-func NewErrInfo(code int32, name string, msg string) *ErrInfo {
+func newErrInfo(code int32, name string, msg string) *ErrInfo {
 	return &ErrInfo{
 		Code: code,
 		Name: name,
@@ -30,4 +31,9 @@ func NewErrInfo(code int32, name string, msg string) *ErrInfo {
 func (err *ErrInfo) Error() string {
 	res, _ := json.Marshal(err)
 	return string(res)
+}
+
+// 1000-2000 filebeat 相关错误码
+func FileBeatConfError(format string, a ...interface{}) *ErrInfo {
+	return newErrInfo(1000, "filebeat-conf-error", fmt.Sprintf(format, a...))
 }
