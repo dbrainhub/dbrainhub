@@ -37,7 +37,7 @@ func TestConfGenImpl_CanGenerateModuleConf_Error(t *testing.T) {
   slowlog:
     enabled: true
     var.paths: ["/path/to/log/mysql/mysql-slow.log*"]`
-	conf, err := model.NewFileBeatConfFactory().NewSlowLogModuleConf(confContent, model.InputModuleType)
+	conf, err := model.NewFileBeatConfFactory().NewModuleConf(confContent, model.InputModuleType)
 	assert.Nil(t, err)
 	assert.Error(t, NewConfGenerator("", nil).CanGenerateModuleConf(conf))
 }
@@ -48,7 +48,7 @@ func TestConfGenImpl_CanGenerateModuleConf_True(t *testing.T) {
   slowlog:
     enabled: true
     var.paths: ["$input_path"]`
-	conf, err := model.NewFileBeatConfFactory().NewSlowLogModuleConf(confContent, model.InputModuleType)
+	conf, err := model.NewFileBeatConfFactory().NewModuleConf(confContent, model.InputModuleType)
 	assert.Nil(t, err)
 	assert.Nil(t, NewConfGenerator("", nil).CanGenerateModuleConf(conf))
 }

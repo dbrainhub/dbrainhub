@@ -13,7 +13,7 @@ type (
 	ConfGenerator interface {
 		// 用于辅助校验配置文件有效性
 		CanGenerateFilebeatConf(conf *model.FilebeatConf) error
-		CanGenerateModuleConf(conf *model.SlowLogModuleConf) error
+		CanGenerateModuleConf(conf *model.ModuleConf) error
 
 		GenerateFilebeatConf(template string) string
 		GenerateModuleConf(template string) string
@@ -49,7 +49,7 @@ func (c *confGenImpl) CanGenerateFilebeatConf(conf *model.FilebeatConf) error {
 }
 
 // check input
-func (c *confGenImpl) CanGenerateModuleConf(conf *model.SlowLogModuleConf) error {
+func (c *confGenImpl) CanGenerateModuleConf(conf *model.ModuleConf) error {
 	if !conf.SlowLog.Enabled {
 		return errors.FileBeatConfError("slowlog is disabled")
 	}
