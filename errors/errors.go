@@ -37,3 +37,20 @@ func (err *ErrInfo) Error() string {
 func FileBeatConfError(format string, a ...interface{}) *ErrInfo {
 	return newErrInfo(1000, "filebeat-conf-error", fmt.Sprintf(format, a...))
 }
+
+// 2000 - 2999 dbcluster 相关
+func InvalidDbType(msg string) *ErrInfo {
+	return newErrInfo(2000, "InvalidDbType", msg)
+}
+
+func DbClusterNotFound(msg string) *ErrInfo {
+	return newErrInfo(2001, "DbClusterNotFound", msg)
+}
+func DbClusterNotFoundById(id int32) *ErrInfo {
+	msg := fmt.Sprintf("dbcluster with id=%d not found", id)
+	return DbClusterNotFound(msg)
+}
+func DbClusterNotFoundByName(name string) *ErrInfo {
+	msg := fmt.Sprintf("dbcluster with name=%d not found", name)
+	return DbClusterNotFound(msg)
+}
