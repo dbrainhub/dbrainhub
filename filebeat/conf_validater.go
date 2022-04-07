@@ -34,12 +34,16 @@ func (c *confValidator) ValidateFilebeatConf(template string) error {
 	if !conf.HttpInfo.Enabled {
 		return errors.FileBeatConfError("http conf is disabled")
 	}
+
+	if !conf.FilebeatModule.Enabled || !conf.FilebeatModule.ReloadEnabled {
+		return errors.FileBeatConfError("filebeat module reload.enabled is disabled")
+	}
 	return nil
 }
 
 func (c *confValidator) ValidateModuleConf(template string) error {
 	// yaml parser
-	conf, err := model.NewFileBeatConfFactory().NewSlowLogModuleConf(template, model.InputModuleType)
+	conf, err := model.NewFileBeatConfFactory().NewModuleConf(template, model.InputModuleType)
 	if err != nil {
 		return err
 	}

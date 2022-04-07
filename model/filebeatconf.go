@@ -2,12 +2,12 @@ package model
 
 type (
 	FilebeatConf struct {
-		Inputs        []*FilebeatInput `config:"filebeat.inputs"`
-		HttpInfo      HttpInfo         `config:"http"`
-		RainhubOutput DBRainhubOutput  `config:"output.dbrainhub"`
+		FilebeatModule FilebeatConfigModule `config:"filebeat.config.modules"`
+		HttpInfo       HttpInfo             `config:"http"`
+		RainhubOutput  DBRainhubOutput      `config:"output.dbrainhub"`
 	}
 
-	SlowLogModuleConf struct {
+	ModuleConf struct {
 		Module  string `config:"module"`
 		SlowLog struct {
 			Enabled bool     `config:"enabled"`
@@ -21,10 +21,13 @@ type (
 		Port    int    `config:"port"`
 	}
 
-	FilebeatInput struct {
-		Type    string   `config:"type"`
-		Enabled bool     `config:"enabled"`
-		Paths   []string `config:"paths"`
+	// the module config in filebeat.yml
+	// ReloadEnabled is the switch for filebeat reload.
+	FilebeatConfigModule struct {
+		Enabled       bool   `config:"enabled"`
+		Path          string `config:"path"`
+		ReloadEnabled bool   `config:"reload.enabled"`
+		ReloadPeriod  string `config:"reload.period"`
 	}
 
 	DBRainhubOutput struct {

@@ -9,7 +9,7 @@ import (
 type (
 	FileBeatConfFactory interface {
 		NewFilebeatConf(confContent string) (*FilebeatConf, error)
-		NewSlowLogModuleConf(confContent string, moduleName string) (*SlowLogModuleConf, error)
+		NewModuleConf(confContent string, moduleName string) (*ModuleConf, error)
 	}
 )
 
@@ -27,8 +27,8 @@ func (f *filebeatConfFactory) NewFilebeatConf(confContent string) (*FilebeatConf
 	return &res, nil
 }
 
-func (f *filebeatConfFactory) NewSlowLogModuleConf(confContent string, moduleName string) (*SlowLogModuleConf, error) {
-	var confs []*SlowLogModuleConf
+func (f *filebeatConfFactory) NewModuleConf(confContent string, moduleName string) (*ModuleConf, error) {
+	var confs []*ModuleConf
 	if err := f.parse(confContent, &confs); err != nil {
 		return nil, err
 	}
@@ -50,7 +50,7 @@ func (f *filebeatConfFactory) parse(confContent string, conf interface{}) error 
 	err = cfg.Unpack(conf)
 	if err != nil {
 		logger.Infof("config unpack err: %v", err)
-		return errors.FileBeatConfError("cfg unpack error")
+		return errors.FileBeatConfError("cfg unpack error:%v", err)
 	}
 
 	return nil
