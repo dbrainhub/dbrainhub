@@ -23,11 +23,17 @@ func TestFilebeatAliveListener_Listen(t *testing.T) {
 	httpClient := &MockHttpClient{
 		errStrs: []string{"111", "222", "333"},
 	}
-	listener := NewAliveListener("", httpClient, 0, 0)
-	errCh := listener.Listen(context.Background())
 
-	assert.Equal(t, (<-errCh).Error(), "111")
-	assert.Equal(t, (<-errCh).Error(), "222")
-	assert.Equal(t, (<-errCh).Error(), "333")
+	// use chan for testing logic in another gorounte
+	errMsgs := make(chan string)
+	callback := func(ctx context.Context, err error) {
+		errMsgs <- err.Error()
+	}
+	listener := NewAliveListener("", httpClient, 0, 0, callback)
+	listener.Listen(context.Background())
+
+	assert.Equal(t, <-errMsgs, "111")
+	assert.Equal(t, <-errMsgs, "222")
+	assert.Equal(t, <-errMsgs, "333")
 
 }

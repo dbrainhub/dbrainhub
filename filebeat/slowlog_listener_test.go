@@ -11,32 +11,50 @@ import (
 
 func TestSlowLogPathListener_Listen(t *testing.T) {
 	var slowPathArr = []string{"111", "222", "222", "333", "333"}
+
+	// use chan for testing logic in another gorounte
+	msgChan := make(chan string)
+	callbacks := SlowLogPathCallback{
+		ChangedCallback: func(ctx context.Context, oldPath, newPath string) {
+			msgChan <- newPath
+		},
+		ErrorCallback: nil,
+	}
+
 	listener := NewSlowLogPathListener(&MockSlowLogQuerier{
 		slowPathArr: slowPathArr,
-	}, 0)
+	}, 0, callbacks)
 
-	newSlowPathChan, errChan := listener.Listen(context.Background())
-	assert.Equal(t, <-newSlowPathChan, "111")
-	assert.Equal(t, <-newSlowPathChan, "222")
-	assert.Equal(t, <-newSlowPathChan, "333")
-	assert.Equal(t, <-newSlowPathChan, "111")
-	assert.Equal(t, len(errChan), 0)
+	listener.Listen(context.Background())
+	assert.Equal(t, <-msgChan, "111")
+	assert.Equal(t, <-msgChan, "222")
+	assert.Equal(t, <-msgChan, "333")
+	assert.Equal(t, <-msgChan, "111")
 }
 
 func TestSlowLogPathListener_ListenError(t *testing.T) {
 	var slowPathArr = []string{"111", "222", "222", "333", "333"}
+
+	msgChan := make(chan string)
+	callbacks := SlowLogPathCallback{
+		ChangedCallback: nil,
+		ErrorCallback: func(ctx context.Context, err error) {
+			msgChan <- err.Error()
+		},
+	}
+
 	listener := NewSlowLogPathListener(&MockSlowLogQuerier{
 		slowPathArr: slowPathArr,
 		isReturnErr: true,
-	}, 0)
+	}, 0, callbacks)
 
-	newSlowPathChan, errChan := listener.Listen(context.Background())
-	assert.Equal(t, (<-errChan).Error(), "111")
-	assert.Equal(t, (<-errChan).Error(), "222")
-	assert.Equal(t, (<-errChan).Error(), "222")
-	assert.Equal(t, (<-errChan).Error(), "333")
-	assert.Equal(t, (<-errChan).Error(), "333")
-	assert.Equal(t, len(newSlowPathChan), 0)
+	listener.Listen(context.Background())
+	assert.Equal(t, <-msgChan, "111")
+	assert.Equal(t, <-msgChan, "222")
+	assert.Equal(t, <-msgChan, "222")
+	assert.Equal(t, <-msgChan, "333")
+	assert.Equal(t, <-msgChan, "333")
+
 }
 
 type MockSlowLogQuerier struct {

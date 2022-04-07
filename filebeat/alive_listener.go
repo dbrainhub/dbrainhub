@@ -11,46 +11,46 @@ import (
 
 type (
 	AliveListener interface {
-		Listen(ctx context.Context) chan error
+		Listen(ctx context.Context)
 	}
+
+	AliveErrorCallback func(ctx context.Context, err error)
 )
 
-func NewAliveListener(host string, client utils.HttpClient, duration, delay time.Duration) AliveListener {
+func NewAliveListener(host string, client utils.HttpClient, interval, delay time.Duration, callback AliveErrorCallback) AliveListener {
 	return &filebeatAliveListener{
-		host:     host,
-		client:   client,
-		duration: duration,
-		delay:    delay,
+		host:          host,
+		client:        client,
+		interval:      interval,
+		delay:         delay,
+		errorCallback: callback,
 	}
 }
 
+// alive check details: https://www.elastic.co/guide/en/beats/filebeat/current/http-endpoint.html
+// `http.enabled == true` is guaranteed in conf validater.
 type filebeatAliveListener struct {
-	host     string
-	client   utils.HttpClient
-	duration time.Duration
-	delay    time.Duration
+	host          string
+	client        utils.HttpClient
+	interval      time.Duration
+	delay         time.Duration // some time for filebeat startup
+	errorCallback AliveErrorCallback
 }
 
-func (f *filebeatAliveListener) Listen(ctx context.Context) chan error {
-	var errCh = make(chan error, 2)
+func (f *filebeatAliveListener) Listen(ctx context.Context) {
 	url := fmt.Sprintf("http://%s/?pretty", f.host)
 
 	go func() {
-		defer func() {
-			if err := recover(); err != nil {
-				logger.Errorf("filebeat alive listener panic, err:%v", err) // TODO: PANIC?
-			}
-		}()
 		time.Sleep(f.delay)
+
 		for {
 			resp, err := f.client.Send(ctx, url, "GET", "")
 			logger.Infof("alive check resp: %v, err:%v", resp, err)
 			if err != nil {
-				errCh <- err
+				f.errorCallback(ctx, err)
 			}
 
-			time.Sleep(f.duration)
+			time.Sleep(f.interval)
 		}
 	}()
-	return errCh
 }
