@@ -29,7 +29,7 @@ func TestFilebeatAliveListener_Listen(t *testing.T) {
 	callback := func(ctx context.Context, err error) {
 		errMsgs <- err.Error()
 	}
-	listener := NewAliveListener("", httpClient, 0, 0, callback)
+	listener := NewAliveListener("", httpClient, 0, &AliveListenerCallback{ErrorCallback: callback})
 	listener.Listen(context.Background())
 
 	assert.Equal(t, <-errMsgs, "111")

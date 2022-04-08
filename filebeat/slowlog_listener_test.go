@@ -14,7 +14,7 @@ func TestSlowLogPathListener_Listen(t *testing.T) {
 
 	// use chan for testing logic in another gorounte
 	msgChan := make(chan string)
-	callbacks := SlowLogPathCallback{
+	callbacks := &SlowLogPathCallback{
 		ChangedCallback: func(ctx context.Context, oldPath, newPath string) {
 			msgChan <- newPath
 		},
@@ -36,7 +36,7 @@ func TestSlowLogPathListener_ListenError(t *testing.T) {
 	var slowPathArr = []string{"111", "222", "222", "333", "333"}
 
 	msgChan := make(chan string)
-	callbacks := SlowLogPathCallback{
+	callbacks := &SlowLogPathCallback{
 		ChangedCallback: nil,
 		ErrorCallback: func(ctx context.Context, err error) {
 			msgChan <- err.Error()

@@ -33,7 +33,7 @@ func (err *ErrInfo) Error() string {
 	return string(res)
 }
 
-// 1000-2000 filebeat 相关错误码
+// 1000-1999 filebeat 相关错误码
 func FileBeatConfError(format string, a ...interface{}) *ErrInfo {
 	return newErrInfo(1000, "filebeat-conf-error", fmt.Sprintf(format, a...))
 }
@@ -51,6 +51,11 @@ func DbClusterNotFoundById(id int32) *ErrInfo {
 	return DbClusterNotFound(msg)
 }
 func DbClusterNotFoundByName(name string) *ErrInfo {
-	msg := fmt.Sprintf("dbcluster with name=%d not found", name)
+	msg := fmt.Sprintf("dbcluster with name=%s not found", name)
 	return DbClusterNotFound(msg)
+}
+
+// 3000-3999 配置相关错误
+func AgentConfigError(format string, a ...interface{}) *ErrInfo {
+	return newErrInfo(3000, "agent-conf-error", fmt.Sprintf(format, a...))
 }

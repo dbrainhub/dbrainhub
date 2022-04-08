@@ -11,11 +11,11 @@ import (
 )
 
 const (
-	User          = "root"
-	Passwd        = "123"
-	Addr          = "127.0.0.1:3306"
-	IsOpenSlowLog = false
-	SlowLogPath   = "/usr/local/var/mysql/lypdeMacBook-Pro-slow.log"
+	user          = "root"
+	passwd        = "123"
+	addr          = "127.0.0.1:3306"
+	isOpenSlowLog = false
+	slowLogPath   = "/usr/local/var/mysql/lypdeMacBook-Pro-slow.log"
 	testSwitch    = false
 )
 
@@ -31,13 +31,13 @@ func TestQuerySlowLog(t *testing.T) {
 	slowLogInfo, err := NewSlowLogInfoQuerier(db).Query(context.Background())
 
 	assert.Nil(t, err)
-	assert.Equal(t, slowLogInfo.IsOpen, IsOpenSlowLog)
-	assert.Equal(t, slowLogInfo.Path, SlowLogPath)
+	assert.Equal(t, slowLogInfo.IsOpen, isOpenSlowLog)
+	assert.Equal(t, slowLogInfo.Path, slowLogPath)
 }
 
 func newDB(t *testing.T) (*sql.DB, error) {
 	db, err := sql.Open("mysql",
-		fmt.Sprintf("%s:%s@tcp(%s)/", User, Passwd, Addr))
+		fmt.Sprintf("%s:%s@tcp(%s)/", user, passwd, addr))
 	assert.Nil(t, err)
 	return db, err
 }

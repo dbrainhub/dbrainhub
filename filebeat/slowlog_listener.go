@@ -21,7 +21,7 @@ type (
 	}
 )
 
-func NewSlowLogPathListener(slowLogQuerier model.SlowLogInfoQuerier, interval time.Duration, callbacks SlowLogPathCallback) SlowLogPathListener {
+func NewSlowLogPathListener(slowLogQuerier model.SlowLogInfoQuerier, interval time.Duration, callbacks *SlowLogPathCallback) SlowLogPathListener {
 	return &slowLogPathListener{
 		slowLogQuerier: slowLogQuerier,
 		interval:       interval,
@@ -32,7 +32,7 @@ func NewSlowLogPathListener(slowLogQuerier model.SlowLogInfoQuerier, interval ti
 type slowLogPathListener struct {
 	slowLogQuerier model.SlowLogInfoQuerier
 	interval       time.Duration
-	callbacks      SlowLogPathCallback
+	callbacks      *SlowLogPathCallback
 }
 
 func (s *slowLogPathListener) Listen(ctx context.Context) {
