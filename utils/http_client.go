@@ -76,7 +76,7 @@ func (h *httpClient) Send(ctx context.Context, url, method, body string) ([]byte
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("http resp code: %d", resp.StatusCode)
+		return nil, fmt.Errorf("http resp code: %d, resp: %s", resp.StatusCode, string(respBytes))
 	}
 	return respBytes, nil
 }
