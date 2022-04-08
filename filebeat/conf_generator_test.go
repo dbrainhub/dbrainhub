@@ -16,7 +16,7 @@ output.dbrainhub:
   timeout: 2`
 	conf, err := model.NewFileBeatConfFactory().NewFilebeatConf(confContent)
 	assert.Nil(t, err)
-	assert.Error(t, NewConfGenerator("", nil).CanGenerateFilebeatConf(conf))
+	assert.Error(t, NewFilebeatConfGenerator(nil).CanGenerate(conf))
 }
 
 func TestConfGenImpl_CanGenerateFilebeatConf_True(t *testing.T) {
@@ -28,7 +28,7 @@ output.dbrainhub:
   timeout: 2`
 	conf, err := model.NewFileBeatConfFactory().NewFilebeatConf(confContent)
 	assert.Nil(t, err)
-	assert.Nil(t, NewConfGenerator("", nil).CanGenerateFilebeatConf(conf))
+	assert.Nil(t, NewFilebeatConfGenerator(nil).CanGenerate(conf))
 }
 
 func TestConfGenImpl_CanGenerateModuleConf_Error(t *testing.T) {
@@ -39,7 +39,7 @@ func TestConfGenImpl_CanGenerateModuleConf_Error(t *testing.T) {
     var.paths: ["/path/to/log/mysql/mysql-slow.log*"]`
 	conf, err := model.NewFileBeatConfFactory().NewModuleConf(confContent, model.InputModuleType)
 	assert.Nil(t, err)
-	assert.Error(t, NewConfGenerator("", nil).CanGenerateModuleConf(conf))
+	assert.Error(t, NewModuleConfGenerator("").CanGenerate(conf))
 }
 
 func TestConfGenImpl_CanGenerateModuleConf_True(t *testing.T) {
@@ -50,7 +50,7 @@ func TestConfGenImpl_CanGenerateModuleConf_True(t *testing.T) {
     var.paths: ["$input_path"]`
 	conf, err := model.NewFileBeatConfFactory().NewModuleConf(confContent, model.InputModuleType)
 	assert.Nil(t, err)
-	assert.Nil(t, NewConfGenerator("", nil).CanGenerateModuleConf(conf))
+	assert.Nil(t, NewModuleConfGenerator("").CanGenerate(conf))
 }
 
 func TestConfGenImpl_GenerateModuleConf(t *testing.T) {
@@ -60,8 +60,8 @@ func TestConfGenImpl_GenerateModuleConf(t *testing.T) {
     enabled: true
     var.paths: ["$input_path"]`
 
-	gen := NewConfGenerator("123", nil)
-	assert.Equal(t, gen.GenerateModuleConf(confContent), `
+	gen := NewModuleConfGenerator("123")
+	assert.Equal(t, gen.Generate(confContent), `
 - module: mysql
   slowlog:
     enabled: true
@@ -75,8 +75,8 @@ output.dbrainhub:
   batch_size: 20480
   retry_limit: 5
   timeout: 2`
-	gen := NewConfGenerator("", []string{"123", "456"})
-	assert.Equal(t, gen.GenerateFilebeatConf(confContent), `
+	gen := NewFilebeatConfGenerator([]string{"123", "456"})
+	assert.Equal(t, gen.Generate(confContent), `
 output.dbrainhub:
   hosts: ["127.0.0.1:10010","123","456"]
   batch_size: 20480

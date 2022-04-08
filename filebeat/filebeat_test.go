@@ -12,23 +12,24 @@ import (
 type MockExecutor struct {
 }
 
-func (m *MockExecutor) Exec(cmd string) (io.Reader, error) {
-	return strings.NewReader(cmd), nil
+func (m *MockExecutor) Exec(ctx context.Context, cmd string) (io.Reader, io.Reader, error) {
+	return strings.NewReader(cmd), nil, nil
 }
 
 func TestFilebeatStartup(t *testing.T) {
 	filebeatOp := NewFilebeatOperation(&MockExecutor{},
 		"/usr/share/filebeat/bin/filebeat",
 		"/etc/filebeat.yml",
+		"/usr/share/filebeat/bin/",
 		"",
 		"/var/log/filebeat")
 
-	res, err := filebeatOp.Startup(context.Background())
+	res, _, err := filebeatOp.Startup(context.Background())
 	assert.Nil(t, err)
 
 	cmd := make([]byte, 1024)
 	n, err := res.Read(cmd)
 	assert.Nil(t, err)
 	assert.NotEqual(t, n, 0)
-	assert.Equal(t, string(cmd[:n]), "chmod +x /usr/share/filebeat/bin/filebeat; /usr/share/filebeat/bin/filebeat -c /etc/filebeat.yml -path.data /var/log/filebeat")
+	assert.Equal(t, string(cmd[:n]), "chmod +x /usr/share/filebeat/bin/filebeat && cd /usr/share/filebeat/bin/ && /usr/share/filebeat/bin/filebeat -c /etc/filebeat.yml -path.data /var/log/filebeat")
 }
