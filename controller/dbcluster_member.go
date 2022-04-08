@@ -63,7 +63,7 @@ func AssignClusterMembers(ctx context.Context, currUser *model.User, clusterId i
 		}
 	}
 
-	err = model.BatchAssignMemberToCluster(ctx, db, toAdd, clusterId)
+	err = model.BatchAssignMembersToCluster(ctx, db, toAdd, clusterId)
 	if err != nil {
 		return err
 	}

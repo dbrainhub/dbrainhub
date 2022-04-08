@@ -37,7 +37,7 @@ func GetDbClusterMembers(ctx context.Context, db *gorm.DB, clusterId int32) ([]*
 
 func GetUnassignedClusterMembers(ctx context.Context, db *gorm.DB, offset int64, limit int64) ([]*DbClusterMember, error) {
 	var members []*DbClusterMember
-	err := db.Where("`cluster_id` = ?", 0).Find(&members).Offset(offset).Limit(limit).Error
+	err := db.Where("`cluster_id` = ?", 0).Offset(offset).Limit(limit).Find(&members).Error
 	if err != nil {
 		return nil, err
 	}
@@ -153,13 +153,16 @@ func DeleteDbClusterMemberById(ctx context.Context, db *gorm.DB, id int32) error
 	return db.Delete(DbClusterMember{}, "`id` = ?", id).Error
 }
 
-func BatchAssignMemberToCluster(ctx context.Context, db *gorm.DB, memberIds []int32, clusterId int32) error {
+func BatchAssignMembersToCluster(ctx context.Context, db *gorm.DB, memberIds []int32, clusterId int32) error {
 	mp := map[string]interface{}{
 		"cluster_id": clusterId,
 	}
-	return db.Model(DbClusterMember{}).Where("`id` in ?", memberIds, mp).Error
+	// FIXME(@yfaming): 此处会生成错误的 SQL 语句，形如：
+	// UPDATE `dbcluster_member` SET `cluster_id` = 1  WHERE (id IN 1,2)
+	// 接下来考虑升级 gorm 解决。目前所依赖为 github.com/jinzhu/gorm，应升级到 gorm.io/gorm
+	return db.Debug().Table("dbcluster_member").Where("id IN ?", memberIds).Updates(mp).Error
 }
 
 func BatchUnassignClusterMembers(ctx context.Context, db *gorm.DB, memberIds []int32) error {
-	return BatchAssignMemberToCluster(ctx, db, memberIds, 0)
+	return BatchAssignMembersToCluster(ctx, db, memberIds, 0)
 }
