@@ -49,7 +49,8 @@ func (s *slowLogPathListener) Listen(ctx context.Context) {
 
 				s.callbacks.ChangedCallback(ctx, slowLogPath, slowLogInfo.Path)
 				slowLogPath = slowLogInfo.Path
-
+			} else {
+				logger.Infof("slowlog path unchange.")
 			}
 
 			time.Sleep(s.interval)
