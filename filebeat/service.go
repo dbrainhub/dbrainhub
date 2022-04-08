@@ -162,7 +162,7 @@ func (f *filebeatService) generateFilebeatConf() error {
 	return nil
 }
 
-// template file -> filebeat.yml
+// template file -> module conf file
 func (f *filebeatService) generateModuleConf(inputPaths string) error {
 	moduleConfTemplate, err := utils.ReadFile(f.getModuleTemplateFilePath())
 	if err != nil {
