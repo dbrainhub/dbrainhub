@@ -7,6 +7,8 @@ replace github.com/Shopify/sarama => github.com/elastic/sarama v1.19.1-0.2022031
 require (
 	github.com/BurntSushi/toml v1.0.0
 	github.com/gin-gonic/gin v1.7.2-0.20220325004437-205bb8151cb7
+	github.com/go-sql-driver/mysql v1.6.0
+	github.com/jinzhu/gorm v1.9.16
 	github.com/natefinch/lumberjack v2.0.0+incompatible
 	github.com/pkg/sftp v1.13.4
 	github.com/stretchr/testify v1.7.0
@@ -15,10 +17,7 @@ require (
 	google.golang.org/protobuf v1.28.0
 )
 
-require (
-	github.com/elastic/beats/v7 v7.17.2
-	github.com/go-sql-driver/mysql v1.6.0
-)
+require github.com/elastic/beats/v7 v7.17.2
 
 require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
@@ -32,6 +31,7 @@ require (
 	github.com/goccy/go-json v0.9.5 // indirect
 	github.com/hashicorp/errwrap v1.0.0 // indirect
 	github.com/hashicorp/go-multierror v1.1.0 // indirect
+	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/joeshaw/multierror v0.0.0-20140124173710-69b34d4ec901 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/kr/fs v0.1.0 // indirect
