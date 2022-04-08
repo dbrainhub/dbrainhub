@@ -50,7 +50,7 @@ func (f *filebeatConfFactory) parse(confContent string, conf interface{}) error 
 	err = cfg.Unpack(conf)
 	if err != nil {
 		logger.Infof("config unpack err: %v", err)
-		return errors.FileBeatConfError("cfg unpack error:%v", err)
+		return errors.FileBeatConfError("cfg unpack error")
 	}
 
 	return nil

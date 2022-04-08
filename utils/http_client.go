@@ -70,13 +70,13 @@ func (h *httpClient) Send(ctx context.Context, url, method, body string) ([]byte
 	}
 	defer resp.Body.Close()
 
-	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("http resp code: %d", resp.StatusCode)
-	}
-
 	respBytes, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		return nil, fmt.Errorf("read resp body error, err:%v", err)
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("http resp code: %d", resp.StatusCode)
 	}
 	return respBytes, nil
 }
