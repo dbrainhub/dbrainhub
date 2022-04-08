@@ -10,20 +10,28 @@ import (
 )
 
 type (
-	ConfGenerator interface {
+	FilebeatConfGenerator interface {
 		// 用于辅助校验配置文件有效性
-		CanGenerateFilebeatConf(conf *model.FilebeatConf) error
-		CanGenerateModuleConf(conf *model.ModuleConf) error
+		CanGenerate(conf *model.FilebeatConf) error
+		Generate(template string) string
+	}
 
-		GenerateFilebeatConf(template string) string
-		GenerateModuleConf(template string) string
+	ModuleConfGenerator interface {
+		// 用于辅助校验配置文件有效性
+		CanGenerate(conf *model.ModuleConf) error
+		Generate(template string) string
 	}
 )
 
-func NewConfGenerator(inputPath string, outputHosts []string) ConfGenerator {
-	return &confGenImpl{
-		inputPath:   inputPath,
+func NewFilebeatConfGenerator(outputHosts []string) FilebeatConfGenerator {
+	return &filebeatConfGenImpl{
 		outputHosts: outputHosts,
+	}
+}
+
+func NewModuleConfGenerator(inputPath string) ModuleConfGenerator {
+	return &moduleConfGenImpl{
+		inputPath: inputPath,
 	}
 }
 
@@ -32,13 +40,12 @@ const (
 	PlaceHolderForOutputHosts = "$output_hosts"
 )
 
-type confGenImpl struct {
-	inputPath   string
+type filebeatConfGenImpl struct {
 	outputHosts []string
 }
 
 // check output
-func (c *confGenImpl) CanGenerateFilebeatConf(conf *model.FilebeatConf) error {
+func (c *filebeatConfGenImpl) CanGenerate(conf *model.FilebeatConf) error {
 	for _, host := range conf.RainhubOutput.Hosts {
 		if strings.TrimSpace(host) == PlaceHolderForOutputHosts {
 			return nil
@@ -48,8 +55,22 @@ func (c *confGenImpl) CanGenerateFilebeatConf(conf *model.FilebeatConf) error {
 	return errors.FileBeatConfError("cannot configure output hosts")
 }
 
+func (c *filebeatConfGenImpl) Generate(template string) string {
+	var hosts string
+	for _, host := range c.outputHosts {
+		hosts += fmt.Sprintf(`,"%s"`, host)
+	}
+	hosts = strings.TrimPrefix(hosts, ",")
+
+	return strings.ReplaceAll(template, fmt.Sprintf(`"%s"`, PlaceHolderForOutputHosts), hosts)
+}
+
+type moduleConfGenImpl struct {
+	inputPath string
+}
+
 // check input
-func (c *confGenImpl) CanGenerateModuleConf(conf *model.ModuleConf) error {
+func (c *moduleConfGenImpl) CanGenerate(conf *model.ModuleConf) error {
 	if !conf.SlowLog.Enabled {
 		return errors.FileBeatConfError("slowlog is disabled")
 	}
@@ -62,16 +83,6 @@ func (c *confGenImpl) CanGenerateModuleConf(conf *model.ModuleConf) error {
 	return errors.FileBeatConfError("cannot configure input path")
 }
 
-func (c *confGenImpl) GenerateFilebeatConf(template string) string {
-	var hosts string
-	for _, host := range c.outputHosts {
-		hosts += fmt.Sprintf(`,"%s"`, host)
-	}
-	hosts = strings.TrimPrefix(hosts, ",")
-
-	return strings.ReplaceAll(template, fmt.Sprintf(`"%s"`, PlaceHolderForOutputHosts), hosts)
-}
-
-func (c *confGenImpl) GenerateModuleConf(template string) string {
+func (c *moduleConfGenImpl) Generate(template string) string {
 	return strings.ReplaceAll(template, PlaceHolderForInputPath, c.inputPath)
 }
