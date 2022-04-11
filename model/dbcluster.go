@@ -3,7 +3,7 @@ package model
 import (
 	"context"
 	"github.com/dbrainhub/dbrainhub/errors"
-	"github.com/jinzhu/gorm"
+	"gorm.io/gorm"
 	"time"
 )
 
@@ -24,7 +24,7 @@ func (cluster *DbCluster) TableName() string {
 	return "dbcluster"
 }
 
-func GetDbClusters(ctx context.Context, db *gorm.DB, offset int64, limit int64) ([]*DbCluster, error) {
+func GetDbClusters(ctx context.Context, db *gorm.DB, offset int, limit int) ([]*DbCluster, error) {
 	var clusters []*DbCluster
 	err := db.Offset(offset).Limit(limit).Find(&clusters).Error
 	if err != nil {

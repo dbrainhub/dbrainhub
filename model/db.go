@@ -3,13 +3,16 @@ package model
 import (
 	"context"
 	"fmt"
-	"github.com/dbrainhub/dbrainhub/configs"
 	"sync"
 	"time"
 
-	_ "github.com/go-sql-driver/mysql"
-	"github.com/jinzhu/gorm"
-	_ "github.com/jinzhu/gorm/dialects/mysql"
+	"github.com/dbrainhub/dbrainhub/configs"
+	"gorm.io/driver/mysql"
+	"gorm.io/driver/postgres"
+	"gorm.io/driver/sqlite"
+	"gorm.io/driver/sqlserver"
+	"gorm.io/gorm"
+	"gorm.io/gorm/schema"
 )
 
 var db *gorm.DB
@@ -18,21 +21,42 @@ var once = sync.Once{}
 func GetDB(ctx context.Context) *gorm.DB {
 	once.Do(func() {
 		var err error
+
 		c := &configs.GetGlobalConfig().DB
-		url := fmt.Sprintf("%s:%s@(%s:%d)/%s?charset=utf8mb4&parseTime=True&loc=Local", c.User, c.Password, c.Host, c.Port, c.Database)
-		db, err = gorm.Open(c.Dialect, url)
+		gormCfg := &gorm.Config{
+			NamingStrategy: schema.NamingStrategy{SingularTable: true},
+		}
+		dsn := fmt.Sprintf("%s:%s@(%s:%d)/%s?charset=utf8mb4&parseTime=True&loc=Local", c.User, c.Password, c.Host, c.Port, c.Database)
+		db, err = gorm.Open(OpenDialectOrPanic(c.Dialect, dsn), gormCfg)
 		if err != nil {
 			panic(err)
 		}
 
-		db.DB().SetMaxIdleConns(64)
-		db.DB().SetMaxOpenConns(128)
-		db.DB().SetConnMaxLifetime(6 * time.Hour)
+		sqlDB, err := db.DB()
+		if err != nil {
+			panic(err)
+		}
+		sqlDB.SetMaxIdleConns(64)
+		sqlDB.SetMaxOpenConns(128)
+		sqlDB.SetConnMaxLifetime(6 * time.Hour)
 
-		// Disable table name's pluralization for GORM
-		db.SingularTable(true)
 		// Disalbe timestamp tracking
-		db.Callback().Update().Replace("gorm:update_time_stamp", func(scope *gorm.Scope) {})
+		db.Callback().Update().Replace("gorm:update_time_stamp", func(db *gorm.DB) {})
 	})
 	return db
+}
+
+func OpenDialectOrPanic(dialect string, dsn string) gorm.Dialector {
+	switch dialect {
+	case "mysql":
+		return mysql.Open(dsn)
+	case "postgres":
+		return postgres.Open(dsn)
+	case "sqlserver":
+		return sqlserver.Open(dsn)
+	case "sqlite":
+		return sqlite.Open(dsn)
+	default:
+		panic(fmt.Sprintf("invalid dialect: %s", dialect))
+	}
 }

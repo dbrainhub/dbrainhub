@@ -2,7 +2,7 @@ package model
 
 import (
 	"context"
-	"github.com/jinzhu/gorm"
+	"gorm.io/gorm"
 	"time"
 )
 
@@ -35,7 +35,7 @@ func GetDbClusterMembers(ctx context.Context, db *gorm.DB, clusterId int32) ([]*
 	return members, nil
 }
 
-func GetUnassignedClusterMembers(ctx context.Context, db *gorm.DB, offset int64, limit int64) ([]*DbClusterMember, error) {
+func GetUnassignedClusterMembers(ctx context.Context, db *gorm.DB, offset int, limit int) ([]*DbClusterMember, error) {
 	var members []*DbClusterMember
 	err := db.Where("`cluster_id` = ?", 0).Offset(offset).Limit(limit).Find(&members).Error
 	if err != nil {
@@ -146,7 +146,7 @@ func UpdateDbClusterMember(ctx context.Context, db *gorm.DB, params *UpdateDbClu
 	}
 
 	mp["ut"] = time.Now().Unix()
-	return db.Model(DbClusterMember{}).Where("`id` = ?", params.Id).Update(mp).Error
+	return db.Model(DbClusterMember{}).Where("`id` = ?", params.Id).Updates(mp).Error
 }
 
 func DeleteDbClusterMemberById(ctx context.Context, db *gorm.DB, id int32) error {
@@ -154,13 +154,14 @@ func DeleteDbClusterMemberById(ctx context.Context, db *gorm.DB, id int32) error
 }
 
 func BatchAssignMembersToCluster(ctx context.Context, db *gorm.DB, memberIds []int32, clusterId int32) error {
+	if len(memberIds) == 0 { // do nothing
+		return nil
+	}
 	mp := map[string]interface{}{
 		"cluster_id": clusterId,
+		"ut":         time.Now().Unix(),
 	}
-	// FIXME(@yfaming): 此处会生成错误的 SQL 语句，形如：
-	// UPDATE `dbcluster_member` SET `cluster_id` = 1  WHERE (id IN 1,2)
-	// 接下来考虑升级 gorm 解决。目前所依赖为 github.com/jinzhu/gorm，应升级到 gorm.io/gorm
-	return db.Debug().Table("dbcluster_member").Where("id IN ?", memberIds).Updates(mp).Error
+	return db.Table("dbcluster_member").Where("id IN ?", memberIds).Updates(mp).Error
 }
 
 func BatchUnassignClusterMembers(ctx context.Context, db *gorm.DB, memberIds []int32) error {
