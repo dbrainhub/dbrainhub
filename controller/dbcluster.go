@@ -7,7 +7,7 @@ import (
 	"github.com/dbrainhub/dbrainhub/model"
 )
 
-func GetDbClusters(ctx context.Context, currUser *model.User, offset, limit int64) ([]*model.DbCluster, error) {
+func GetDbClusters(ctx context.Context, currUser *model.User, offset, limit int) ([]*model.DbCluster, error) {
 	db := model.GetDB(ctx)
 	return model.GetDbClusters(ctx, db, offset, limit)
 }

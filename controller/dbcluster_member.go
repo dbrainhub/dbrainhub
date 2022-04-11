@@ -5,7 +5,7 @@ import (
 	"github.com/dbrainhub/dbrainhub/model"
 )
 
-func GetUnassignedDbClusterMembers(ctx context.Context, currUser *model.User, offset, limit int64) ([]*model.DbClusterMember, error) {
+func GetUnassignedDbClusterMembers(ctx context.Context, currUser *model.User, offset, limit int) ([]*model.DbClusterMember, error) {
 	db := model.GetDB(ctx)
 	return model.GetUnassignedClusterMembers(ctx, db, offset, limit)
 }

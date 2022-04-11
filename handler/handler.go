@@ -13,8 +13,8 @@ const (
 )
 
 type OffsetLimit struct {
-	Offset int64 `json:"offset" form:"offset" uri:"offset"`
-	Limit  int64 `json:"limit" form:"offset" uri:"limit"`
+	Offset int `json:"offset" form:"offset" uri:"offset"`
+	Limit  int `json:"limit" form:"offset" uri:"limit"`
 }
 
 func (ol *OffsetLimit) AutoAdjust() {

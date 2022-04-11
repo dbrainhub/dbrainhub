@@ -1,7 +1,7 @@
 address = "127.0.0.1:1502"
 
 [db]
-# dialect should be mysql, postgres, mssql or sqlite
+# dialect should be mysql, postgres, sqlserver or sqlite
 dialect = "mysql"
 user = "dbrainhub"
 password = "a#l4qb+fa"
