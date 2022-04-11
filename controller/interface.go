@@ -7,7 +7,6 @@ import (
 
 type Controller interface {
 	SayHello(*gin.Context, *api.HelloWorldRequest) (*api.HelloWorldResponse, error)
-	DbRainhubOutput(*gin.Context, DbRainhubRequest) (*DbRainhubResponse, error)
 }
 
 func NewController() Controller {

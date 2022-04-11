@@ -16,3 +16,6 @@ name = "dbrainhub.log"
 
 [es]
 addresses = ["http://127.0.0.1:9200"]
+
+[rate_limiter]
+qps_threshold = 100
