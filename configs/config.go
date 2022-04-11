@@ -24,6 +24,9 @@ type GlobalConfig struct {
 		LogDir string `toml:"log_dir"`
 		Name   string `toml:"name"`
 	} `toml:"log_info"`
+	Es struct {
+		Addresses  []string `toml:"addresses"`
+	} `toml:"es"`
 }
 
 var globalConfig *GlobalConfig

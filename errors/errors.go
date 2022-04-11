@@ -37,6 +37,9 @@ func (err *ErrInfo) Error() string {
 func FileBeatConfError(format string, a ...interface{}) *ErrInfo {
 	return newErrInfo(1000, "FilebeatConfError", fmt.Sprintf(format, a...))
 }
+func DbMemberNotClassified(msg string) *ErrInfo {
+	return newErrInfo(1001, "DbMemberNotClassified", msg)
+}
 
 // 2000 - 2999 dbcluster 相关
 func InvalidDbType(msg string) *ErrInfo {

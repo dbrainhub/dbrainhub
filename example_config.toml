@@ -13,3 +13,6 @@ database = "dbrainhub"
 level = "debug"
 log_dir = "."
 name = "dbrainhub.log"
+
+[es]
+addresses = ["http://127.0.0.1:9200"]

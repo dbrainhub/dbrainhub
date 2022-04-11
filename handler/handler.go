@@ -38,3 +38,12 @@ func SayHello(c *gin.Context) (interface{}, error) {
 	return controller.NewController().SayHello(c, req)
 
 }
+
+func DbRainhub(c *gin.Context) (interface{}, error) {
+	var req controller.DbRainhubRequest
+	err := c.ShouldBindJSON(&req)
+	if err != nil {
+		return nil, BadRequestError("input unsharmal err: %v", err)
+	}
+	return controller.NewController().DbRainhubOutput(c, req)
+}
