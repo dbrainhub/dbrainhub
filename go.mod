@@ -7,7 +7,7 @@ replace github.com/Shopify/sarama => github.com/elastic/sarama v1.19.1-0.2022031
 require (
 	github.com/BurntSushi/toml v1.0.0
 	github.com/elastic/beats/v7 v7.17.2
-  github.com/elastic/go-elasticsearch/v8 v8.1.0
+	github.com/elastic/go-elasticsearch/v8 v8.1.0
 	github.com/gin-gonic/gin v1.7.2-0.20220325004437-205bb8151cb7
 	github.com/go-sql-driver/mysql v1.6.0
 	github.com/natefinch/lumberjack v2.0.0+incompatible
@@ -27,6 +27,8 @@ require (
 	github.com/armon/go-radix v1.0.0 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/denisenkom/go-mssqldb v0.12.0 // indirect
+	github.com/elastic/elastic-agent-client/v7 v7.0.0-20210727140539-f0905d9377f6 // indirect
+	github.com/elastic/elastic-transport-go/v8 v8.1.0 // indirect
 	github.com/elastic/go-sysinfo v1.7.1 // indirect
 	github.com/elastic/go-ucfg v0.8.3 // indirect
 	github.com/elastic/go-windows v1.0.1 // indirect
@@ -36,8 +38,10 @@ require (
 	github.com/go-playground/universal-translator v0.18.0 // indirect
 	github.com/go-playground/validator/v10 v10.10.0 // indirect
 	github.com/goccy/go-json v0.9.5 // indirect
+	github.com/gofrs/uuid v4.0.0+incompatible // indirect
 	github.com/golang-sql/civil v0.0.0-20190719163853-cb61b32ac6fe // indirect
 	github.com/golang-sql/sqlexp v0.0.0-20170517235910-f1bb20e5a188 // indirect
+	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/hashicorp/errwrap v1.0.0 // indirect
 	github.com/hashicorp/go-multierror v1.1.0 // indirect
 	github.com/jackc/chunkreader/v2 v2.0.1 // indirect
