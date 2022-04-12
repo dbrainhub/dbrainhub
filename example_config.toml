@@ -4,8 +4,8 @@ address = "127.0.0.1:1502"
 # dialect should be mysql, postgres, sqlserver or sqlite
 dialect = "mysql"
 user = "dbrainhub"
-password = "a#l4qb+fa"
-host = "192.168.64.3"
+password = "dbrainhub"
+host = "127.0.0.1"
 port = 3306
 database = "dbrainhub"
 
@@ -14,8 +14,6 @@ level = "debug"
 log_dir = "."
 name = "dbrainhub.log"
 
-[es]
-addresses = ["http://127.0.0.1:9200"]
-
-[rate_limiter]
+[output_server]
+es_addresses = ["http://127.0.0.1:9200"]
 qps_threshold = 100

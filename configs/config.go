@@ -24,12 +24,10 @@ type GlobalConfig struct {
 		LogDir string `toml:"log_dir"`
 		Name   string `toml:"name"`
 	} `toml:"log_info"`
-	Es struct {
-		Addresses []string `toml:"addresses"`
-	} `toml:"es"`
-	RateLimiter struct {
-		QpsThreshold int `toml:"qps_threshold"`
-	} `toml:"rate_limiter"`
+	OutputServer struct {
+		EsAddresses  []string `toml:"es_addresses"`
+		QpsThreshold int      `toml:"qps_threshold"`
+	} `toml:"output_server"`
 }
 
 var globalConfig *GlobalConfig

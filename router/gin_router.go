@@ -29,7 +29,7 @@ func (g *ginRouter) Init() {
 	g.server.GET("/dbclusters/:clusterId/members", handlerWapper(handler.GetDbClusterMembers))
 	g.server.PUT("/dbclusters/:clusterId/members", handlerWapper(handler.AssignDbClusterMembers))
 	// dbrainhub output
-	g.server.POST("/dbrainhub/output", handlerWapper(handler.DbRainhubOutput))
+	g.server.POST("/dbrainhub/slowlogs", handlerWapper(handler.DbRainhubOutput))
 }
 
 func (g *ginRouter) GetHandler() http.Handler {
