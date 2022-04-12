@@ -16,18 +16,12 @@ type AgentConfig struct {
 	} `toml:"db"`
 
 	Server struct {
-		Addr          string `toml:"addr"` // TODO: 扩展成多个
-		Timeout       int    `toml:"http_timeout"`
-		Retry         int    `toml:"http_retry"`
-		RetryInterval int    `toml:"http_retry_interval"`
+		Addr              string `toml:"addr"` // TODO: 扩展成多个
+		Timeout           int    `toml:"http_timeout"`
+		Retry             int    `toml:"http_retry"`
+		RetryInterval     int    `toml:"http_retry_interval"`
+		HeartbeatInterval int    `toml:"heartbeat_interval"`
 	} `toml:"server"`
-
-	Heartbeat struct {
-		Interval      int `toml:"interval"`
-		Timeout       int `toml:"http_timeout"`
-		Retry         int `toml:"http_retry"`
-		RetryInterval int `toml:"http_retry_interval"`
-	} `toml:"heartbeat"`
 
 	LogInfo struct {
 		Level  string `toml:"level"`

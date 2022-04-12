@@ -19,11 +19,11 @@ type HeartbeatService interface {
 }
 
 func NewHeartbeatService(agentConf *configs.AgentConfig) HeartbeatService {
-	httpClient := utils.NewHttpClient(time.Millisecond*time.Duration(agentConf.Heartbeat.Timeout),
-		agentConf.Heartbeat.Retry,
-		time.Duration(agentConf.Heartbeat.RetryInterval)*time.Millisecond)
+	httpClient := utils.NewHttpClient(time.Millisecond*time.Duration(agentConf.Server.Timeout),
+		agentConf.Server.Retry,
+		time.Duration(agentConf.Server.RetryInterval)*time.Millisecond)
 	return &heartbeatImpl{
-		interval:   time.Duration(agentConf.Heartbeat.Interval) * time.Millisecond,
+		interval:   time.Duration(agentConf.Server.HeartbeatInterval) * time.Millisecond,
 		serverAddr: agentConf.Server.Addr,
 		dbType:     agentConf.DB.DBType,
 		Port:       agentConf.DB.Port,
