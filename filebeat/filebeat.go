@@ -1,9 +1,13 @@
 package filebeat
 
 import (
+	"bytes"
 	"context"
 	"fmt"
 	"io"
+	"os/exec"
+
+	"github.com/dbrainhub/dbrainhub/utils/logger"
 )
 
 // filebeat operation includes startup、reload.
@@ -51,4 +55,21 @@ func (f *filebeatOperationImpl) cmd() string {
 		res += fmt.Sprintf(" -path.data %s", f.dataPath)
 	}
 	return res
+}
+
+type localExecutor struct{}
+
+func (l *localExecutor) Exec(ctx context.Context, cmd string) (io.Reader, io.Reader, error) {
+	var stdout, stderr bytes.Buffer
+	c := exec.CommandContext(ctx, "sh", "-c", cmd)
+	c.Stdout = &stdout
+	c.Stderr = &stderr
+	go func() {
+		err := c.Run()
+		if err != nil {
+			// if stdout/stderr uncaught, print here.
+			logger.Errorf("local executor run error, err: %v, cmd: %s, stdout: %s, stderr: %v", err, cmd, stdout.String(), stderr.String())
+		}
+	}()
+	return &stdout, &stderr, nil
 }
