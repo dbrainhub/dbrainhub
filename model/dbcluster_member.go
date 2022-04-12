@@ -2,8 +2,10 @@ package model
 
 import (
 	"context"
-	"github.com/jinzhu/gorm"
 	"time"
+
+	"github.com/dbrainhub/dbrainhub/errors"
+	"gorm.io/gorm"
 )
 
 type DbClusterMember struct {
@@ -35,19 +37,34 @@ func GetDbClusterMembers(ctx context.Context, db *gorm.DB, clusterId int32) ([]*
 	return members, nil
 }
 
-func GetUnassignedClusterMembers(ctx context.Context, db *gorm.DB, offset int64, limit int64) ([]*DbClusterMember, error) {
+func GetUnassignedClusterMembers(ctx context.Context, db *gorm.DB, offset int, limit int) ([]*DbClusterMember, error) {
 	var members []*DbClusterMember
-	err := db.Where("`cluster_id` = ?", 0).Find(&members).Offset(offset).Limit(limit).Error
+	err := db.Where("`cluster_id` = ?", 0).Offset(offset).Limit(limit).Find(&members).Error
 	if err != nil {
 		return nil, err
 	}
 	return members, nil
 }
 
+func GetDbClusterMemberById(ctx context.Context, db *gorm.DB, id int32) (*DbClusterMember, error) {
+	var member DbClusterMember
+	err := db.First(&member, "`id` = ?", id).Error
+	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return nil, errors.DbClusterMemberNotFoundById(id)
+		}
+		return nil, err
+	}
+	return &member, nil
+}
+
 func GetDbClusterMemberByIpAndPort(ctx context.Context, db *gorm.DB, ipAddr string, port int16) (*DbClusterMember, error) {
 	var member DbClusterMember
 	err := db.First(&member, "`ipaddr` = ? AND `port` = ?", ipAddr, port).Error
 	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return nil, errors.DbClusterMemberNotFoundByIpAndPort(ipAddr, port)
+		}
 		return nil, err
 	}
 	return &member, nil
@@ -146,20 +163,24 @@ func UpdateDbClusterMember(ctx context.Context, db *gorm.DB, params *UpdateDbClu
 	}
 
 	mp["ut"] = time.Now().Unix()
-	return db.Model(DbClusterMember{}).Where("`id` = ?", params.Id).Update(mp).Error
+	return db.Model(DbClusterMember{}).Where("`id` = ?", params.Id).Updates(mp).Error
 }
 
 func DeleteDbClusterMemberById(ctx context.Context, db *gorm.DB, id int32) error {
 	return db.Delete(DbClusterMember{}, "`id` = ?", id).Error
 }
 
-func BatchAssignMemberToCluster(ctx context.Context, db *gorm.DB, memberIds []int32, clusterId int32) error {
+func BatchAssignMembersToCluster(ctx context.Context, db *gorm.DB, memberIds []int32, clusterId int32) error {
+	if len(memberIds) == 0 { // do nothing
+		return nil
+	}
 	mp := map[string]interface{}{
 		"cluster_id": clusterId,
+		"ut":         time.Now().Unix(),
 	}
-	return db.Model(DbClusterMember{}).Where("`id` in ?", memberIds, mp).Error
+	return db.Table("dbcluster_member").Where("id IN ?", memberIds).Updates(mp).Error
 }
 
 func BatchUnassignClusterMembers(ctx context.Context, db *gorm.DB, memberIds []int32) error {
-	return BatchAssignMemberToCluster(ctx, db, memberIds, 0)
+	return BatchAssignMembersToCluster(ctx, db, memberIds, 0)
 }

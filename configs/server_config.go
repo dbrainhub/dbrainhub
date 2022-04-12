@@ -24,6 +24,10 @@ type ServerConfig struct {
 		LogDir string `toml:"log_dir"`
 		Name   string `toml:"name"`
 	} `toml:"log_info"`
+	OutputServer struct {
+		EsAddresses  []string `toml:"es_addresses"`
+		QpsThreshold int      `toml:"qps_threshold"`
+	} `toml:"output_server"`
 }
 
 var globalServerConfig ServerConfig

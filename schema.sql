@@ -32,9 +32,12 @@ CREATE TABLE IF NOT EXISTS `dbcluster_member` (
 
 CREATE TABLE IF NOT EXISTS `tag_item` (
   `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
-  `item_id` INT UNSIGNED NOT NULL,
   `item_type` VARCHAR(32) NOT NULL,
+  `item_id` INT UNSIGNED NOT NULL,
   `tag` VARCHAR(32) NOT NULL,
+  `ct` INT NOT NULL,
+  `ut` INT NOT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE INDEX `unq_item_tag` (`item_id`, `item_type`, `tag`)
+  UNIQUE INDEX `unq_item_tag` (`item_type`, `item_id`, `tag`),
+  INDEX `idx_tag_item` (`tag`, `item_type`, `item_id`)
 ) ENGINE=InnoDB DEFAULT CHARACTER SET utf8mb4;

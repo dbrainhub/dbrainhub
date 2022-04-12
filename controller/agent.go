@@ -6,12 +6,6 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func SayHello(c *gin.Context, req *api.HelloWorldRequest) (*api.HelloWorldResponse, error) {
-	return &api.HelloWorldResponse{
-		Pang: "hello,world!",
-	}, nil
-}
-
 func Heartbeat(c *gin.Context, req *api.HeartbeatRequest) (*api.HeartbeatResponse, error) {
 	logger.Infof("receive heartbeat from IP:%s, port: %d, req: %#v\n", req.AgentInfo.Localip, req.DbInfo.Port, req)
 	return &api.HeartbeatResponse{}, nil

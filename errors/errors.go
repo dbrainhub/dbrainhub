@@ -38,6 +38,10 @@ func FileBeatConfError(format string, a ...interface{}) *ErrInfo {
 	return newErrInfo(1000, "FilebeatConfError", fmt.Sprintf(format, a...))
 }
 
+func FilebeatRateLimited(msg string) *ErrInfo {
+	return newErrInfo(1001, "FilebeatRateLimited", msg)
+}
+
 // 2000 - 2999 dbcluster 相关
 func InvalidDbType(msg string) *ErrInfo {
 	return newErrInfo(2000, "InvalidDbType", msg)
@@ -58,4 +62,26 @@ func DbClusterNotFoundByName(name string) *ErrInfo {
 // 3000-3999 配置相关错误
 func AgentConfigError(format string, a ...interface{}) *ErrInfo {
 	return newErrInfo(3000, "AgentConfError", fmt.Sprintf(format, a...))
+}
+
+// 4000-4999 dbcluster member 相关
+func DbClusterMemberNotFound(msg string) *ErrInfo {
+	return newErrInfo(4000, "DbClusterMemberNotFound", msg)
+}
+func DbClusterMemberNotFoundById(id int32) *ErrInfo {
+	msg := fmt.Sprintf("dbcluster_member with id=%d not found", id)
+	return DbClusterMemberNotFound(msg)
+}
+func DbClusterMemberNotFoundByIpAndPort(ipAddr string, port int16) *ErrInfo {
+	msg := fmt.Sprintf("dbcluster_member with ip=%s and port=%d not found", ipAddr, port)
+	return DbClusterMemberNotFound(msg)
+}
+
+func DbClusterMemberNotAssigned(msg string) *ErrInfo {
+	return newErrInfo(4001, "DbClusterMemberNotAssigned", msg)
+}
+
+// 5000-5999 tag 相关
+func InvalidItemType(msg string) *ErrInfo {
+	return newErrInfo(5000, "InvalidItemType", msg)
 }

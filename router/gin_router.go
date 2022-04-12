@@ -20,9 +20,22 @@ func (g *ginRouter) Init() {
 	g.server.Use(StatMiddleware)
 	g.server.Use(gin.Recovery())
 
-	g.server.POST("/hello_world", handlerWapper(handler.SayHello))
+	// agent
 	g.server.POST("/heartbeat", handlerWapper(handler.Heartbeat))
 	g.server.POST("/report", handlerWapper(handler.Report))
+
+	// dbcluster
+	g.server.POST("/dbclusters", handlerWapper(handler.CreateDbCluster))
+	g.server.GET("/dbclusters", handlerWapper(handler.GetDbClusters))
+	// dbcluster memebers
+	g.server.GET("/dbclusters/unassigned_members", handlerWapper(handler.GetUnassignedDbClusterMembers))
+	g.server.GET("/dbclusters/:clusterId/members", handlerWapper(handler.GetDbClusterMembers))
+	g.server.PUT("/dbclusters/:clusterId/members", handlerWapper(handler.AssignDbClusterMembers))
+	// tags
+	g.server.GET("/tags/all", handlerWapper(handler.GetAllTags))
+	g.server.POST("/tags", handlerWapper(handler.AddTag))
+	// dbrainhub output
+	g.server.POST("/dbrainhub/slowlogs", handlerWapper(handler.DbRainhubOutput))
 }
 
 func (g *ginRouter) GetHandler() http.Handler {
