@@ -38,6 +38,10 @@ func FileBeatConfError(format string, a ...interface{}) *ErrInfo {
 	return newErrInfo(1000, "FilebeatConfError", fmt.Sprintf(format, a...))
 }
 
+func FilebeatRateLimited(msg string) *ErrInfo {
+	return newErrInfo(1001, "FilebeatRateLimited", msg)
+}
+
 // 2000 - 2999 dbcluster 相关
 func InvalidDbType(msg string) *ErrInfo {
 	return newErrInfo(2000, "InvalidDbType", msg)
@@ -53,6 +57,10 @@ func DbClusterNotFoundById(id int32) *ErrInfo {
 func DbClusterNotFoundByName(name string) *ErrInfo {
 	msg := fmt.Sprintf("dbcluster with name=%s not found", name)
 	return DbClusterNotFound(msg)
+}
+
+func DbMemberNotClassified(msg string) *ErrInfo {
+	return newErrInfo(2002, "DbMemberNotClassified", msg)
 }
 
 // 3000-3999 配置相关错误
