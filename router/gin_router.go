@@ -28,6 +28,9 @@ func (g *ginRouter) Init() {
 	g.server.GET("/dbclusters/unassigned_members", handlerWapper(handler.GetUnassignedDbClusterMembers))
 	g.server.GET("/dbclusters/:clusterId/members", handlerWapper(handler.GetDbClusterMembers))
 	g.server.PUT("/dbclusters/:clusterId/members", handlerWapper(handler.AssignDbClusterMembers))
+	// tags
+	g.server.GET("/tags/all", handlerWapper(handler.GetAllTags))
+	g.server.POST("/tags", handlerWapper(handler.AddTag))
 	// dbrainhub output
 	g.server.POST("/dbrainhub/slowlogs", handlerWapper(handler.DbRainhubOutput))
 }

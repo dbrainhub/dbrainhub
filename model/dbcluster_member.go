@@ -2,8 +2,10 @@ package model
 
 import (
 	"context"
-	"gorm.io/gorm"
 	"time"
+
+	"github.com/dbrainhub/dbrainhub/errors"
+	"gorm.io/gorm"
 )
 
 type DbClusterMember struct {
@@ -44,10 +46,25 @@ func GetUnassignedClusterMembers(ctx context.Context, db *gorm.DB, offset int, l
 	return members, nil
 }
 
+func GetDbClusterMemberById(ctx context.Context, db *gorm.DB, id int32) (*DbClusterMember, error) {
+	var member DbClusterMember
+	err := db.First(&member, "`id` = ?", id).Error
+	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return nil, errors.DbClusterMemberNotFoundById(id)
+		}
+		return nil, err
+	}
+	return &member, nil
+}
+
 func GetDbClusterMemberByIpAndPort(ctx context.Context, db *gorm.DB, ipAddr string, port int16) (*DbClusterMember, error) {
 	var member DbClusterMember
 	err := db.First(&member, "`ipaddr` = ? AND `port` = ?", ipAddr, port).Error
 	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return nil, errors.DbClusterMemberNotFoundByIpAndPort(ipAddr, port)
+		}
 		return nil, err
 	}
 	return &member, nil
