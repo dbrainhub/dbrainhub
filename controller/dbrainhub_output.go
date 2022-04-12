@@ -10,7 +10,7 @@ import (
 	"github.com/dbrainhub/dbrainhub/configs"
 	"github.com/dbrainhub/dbrainhub/errors"
 	"github.com/dbrainhub/dbrainhub/model"
-	"github.com/dbrainhub/dbrainhub/rate_limit"
+	"github.com/dbrainhub/dbrainhub/utils/rate_limit"
 	"github.com/elastic/beats/v7/libbeat/publisher"
 	esClient "github.com/elastic/go-elasticsearch/v8"
 	"github.com/gin-gonic/gin"
