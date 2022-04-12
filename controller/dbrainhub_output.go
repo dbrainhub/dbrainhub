@@ -55,7 +55,7 @@ func DbRainhubOutput(c *gin.Context, req DbRainhubRequest) (*DbRainhubResponse, 
 		return nil, err
 	}
 	if member == nil || member.ClusterId == 0 {
-		return nil, errors.DbMemberNotClassified("db member should be assigned to a cluster first.")
+		return nil, errors.DbClusterMemberNotAssigned("db member should be assigned to a cluster first.")
 	}
 
 	var failedEvents []int32

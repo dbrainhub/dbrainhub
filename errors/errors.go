@@ -67,3 +67,25 @@ func DbMemberNotClassified(msg string) *ErrInfo {
 func AgentConfigError(format string, a ...interface{}) *ErrInfo {
 	return newErrInfo(3000, "AgentConfError", fmt.Sprintf(format, a...))
 }
+
+// 4000-4999 dbcluster member 相关
+func DbClusterMemberNotFound(msg string) *ErrInfo {
+	return newErrInfo(4000, "DbClusterMemberNotFound", msg)
+}
+func DbClusterMemberNotFoundById(id int32) *ErrInfo {
+	msg := fmt.Sprintf("dbcluster_member with id=%d not found", id)
+	return DbClusterMemberNotFound(msg)
+}
+func DbClusterMemberNotFoundByIpAndPort(ipAddr string, port int16) *ErrInfo {
+	msg := fmt.Sprintf("dbcluster_member with ip=%s and port=%s not found", ipAddr, port)
+	return DbClusterMemberNotFound(msg)
+}
+
+func DbClusterMemberNotAssigned(msg string) *ErrInfo {
+	return newErrInfo(4001, "DbClusterMemberNotAssigned", msg)
+}
+
+// 500-5999 tag 相关
+func InvalidItemType(msg string) *ErrInfo {
+	return newErrInfo(5000, "InvalidItemType", msg)
+}
