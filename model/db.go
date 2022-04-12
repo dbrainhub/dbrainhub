@@ -3,9 +3,10 @@ package model
 import (
 	"context"
 	"fmt"
-	"github.com/dbrainhub/dbrainhub/configs"
 	"sync"
 	"time"
+
+	"github.com/dbrainhub/dbrainhub/configs"
 
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jinzhu/gorm"
@@ -18,7 +19,7 @@ var once = sync.Once{}
 func GetDB(ctx context.Context) *gorm.DB {
 	once.Do(func() {
 		var err error
-		c := &configs.GetGlobalConfig().DB
+		c := &configs.GetGlobalServerConfig().DB
 		url := fmt.Sprintf("%s:%s@(%s:%d)/%s?charset=utf8mb4&parseTime=True&loc=Local", c.User, c.Password, c.Host, c.Port, c.Database)
 		db, err = gorm.Open(c.Dialect, url)
 		if err != nil {

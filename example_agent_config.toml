@@ -1,0 +1,40 @@
+[db]
+host_type = "self" # self: 私有机房， aliyun: 阿里云， tencentyun: 腾讯云
+type = "mysql"
+port = 3306
+user = "root"
+password = "123"
+
+[log_info]
+level = "debug"
+log_dir = "."
+name = "dbrainhub.log"
+
+[server]
+addr = "127.0.0.1:1502"
+http_timeout = 2000 # ms
+http_retry = 2
+http_retry_interval = 1000 #ms
+
+[heartbeat]
+interval = 10000 # ms
+http_timeout = 2000 # ms
+http_retry = 2
+http_retry_interval = 1000 # ms
+
+[filebeat]
+# 这里假设位于 bin 目录执行的 agent，conf 目录与 bin 目录同级
+filebeat_conf_template = "../conf/filebeat.yml.template"
+# 与 db.type 对应的配置
+module_conf_template = "../conf/mysql.yml.template"
+# 假设 filebeat 最终位于 bin 的同级目录中
+home_path = "../filebeat/"
+alive_listener_interval = 5000 # ms
+alive_listener_http_retry = 2
+alive_listener_http_retry_interval = 1000 # ms
+alive_listener_http_interval = 10000 # ms
+slowlog_listener_interval = 10000 # ms
+# filebeat 启动超时时间
+startup_timeout = 100000 # ms
+
+

@@ -20,6 +20,110 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+type StartupReportRequest_HostType int32
+
+const (
+	StartupReportRequest_UNKNOWN    StartupReportRequest_HostType = 0
+	StartupReportRequest_SELF       StartupReportRequest_HostType = 1
+	StartupReportRequest_ALIYUN     StartupReportRequest_HostType = 2
+	StartupReportRequest_TENCENTYUN StartupReportRequest_HostType = 3
+)
+
+// Enum value maps for StartupReportRequest_HostType.
+var (
+	StartupReportRequest_HostType_name = map[int32]string{
+		0: "UNKNOWN",
+		1: "SELF",
+		2: "ALIYUN",
+		3: "TENCENTYUN",
+	}
+	StartupReportRequest_HostType_value = map[string]int32{
+		"UNKNOWN":    0,
+		"SELF":       1,
+		"ALIYUN":     2,
+		"TENCENTYUN": 3,
+	}
+)
+
+func (x StartupReportRequest_HostType) Enum() *StartupReportRequest_HostType {
+	p := new(StartupReportRequest_HostType)
+	*p = x
+	return p
+}
+
+func (x StartupReportRequest_HostType) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (StartupReportRequest_HostType) Descriptor() protoreflect.EnumDescriptor {
+	return file_http_proto_enumTypes[0].Descriptor()
+}
+
+func (StartupReportRequest_HostType) Type() protoreflect.EnumType {
+	return &file_http_proto_enumTypes[0]
+}
+
+func (x StartupReportRequest_HostType) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use StartupReportRequest_HostType.Descriptor instead.
+func (StartupReportRequest_HostType) EnumDescriptor() ([]byte, []int) {
+	return file_http_proto_rawDescGZIP(), []int{4, 0}
+}
+
+type StartupReportRequest_DBType int32
+
+const (
+	StartupReportRequest_MYSQL   StartupReportRequest_DBType = 0
+	StartupReportRequest_TIDB    StartupReportRequest_DBType = 1
+	StartupReportRequest_REDIS   StartupReportRequest_DBType = 2
+	StartupReportRequest_MONGODB StartupReportRequest_DBType = 3
+)
+
+// Enum value maps for StartupReportRequest_DBType.
+var (
+	StartupReportRequest_DBType_name = map[int32]string{
+		0: "MYSQL",
+		1: "TIDB",
+		2: "REDIS",
+		3: "MONGODB",
+	}
+	StartupReportRequest_DBType_value = map[string]int32{
+		"MYSQL":   0,
+		"TIDB":    1,
+		"REDIS":   2,
+		"MONGODB": 3,
+	}
+)
+
+func (x StartupReportRequest_DBType) Enum() *StartupReportRequest_DBType {
+	p := new(StartupReportRequest_DBType)
+	*p = x
+	return p
+}
+
+func (x StartupReportRequest_DBType) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (StartupReportRequest_DBType) Descriptor() protoreflect.EnumDescriptor {
+	return file_http_proto_enumTypes[1].Descriptor()
+}
+
+func (StartupReportRequest_DBType) Type() protoreflect.EnumType {
+	return &file_http_proto_enumTypes[1]
+}
+
+func (x StartupReportRequest_DBType) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use StartupReportRequest_DBType.Descriptor instead.
+func (StartupReportRequest_DBType) EnumDescriptor() ([]byte, []int) {
+	return file_http_proto_rawDescGZIP(), []int{4, 1}
+}
+
 type HelloWorldRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -114,6 +218,344 @@ func (x *HelloWorldResponse) GetPang() string {
 	return ""
 }
 
+// heartbeat protocol
+type HeartbeatRequest struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	AgentInfo *HeartbeatRequest_AgentInfo `protobuf:"bytes,1,opt,name=agent_info,json=agentInfo,proto3" json:"agent_info,omitempty"`
+	DbInfo    *HeartbeatRequest_DBInfo    `protobuf:"bytes,2,opt,name=dbInfo,proto3" json:"dbInfo,omitempty"`
+}
+
+func (x *HeartbeatRequest) Reset() {
+	*x = HeartbeatRequest{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_http_proto_msgTypes[2]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *HeartbeatRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*HeartbeatRequest) ProtoMessage() {}
+
+func (x *HeartbeatRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_http_proto_msgTypes[2]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use HeartbeatRequest.ProtoReflect.Descriptor instead.
+func (*HeartbeatRequest) Descriptor() ([]byte, []int) {
+	return file_http_proto_rawDescGZIP(), []int{2}
+}
+
+func (x *HeartbeatRequest) GetAgentInfo() *HeartbeatRequest_AgentInfo {
+	if x != nil {
+		return x.AgentInfo
+	}
+	return nil
+}
+
+func (x *HeartbeatRequest) GetDbInfo() *HeartbeatRequest_DBInfo {
+	if x != nil {
+		return x.DbInfo
+	}
+	return nil
+}
+
+type HeartbeatResponse struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+}
+
+func (x *HeartbeatResponse) Reset() {
+	*x = HeartbeatResponse{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_http_proto_msgTypes[3]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *HeartbeatResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*HeartbeatResponse) ProtoMessage() {}
+
+func (x *HeartbeatResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_http_proto_msgTypes[3]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use HeartbeatResponse.ProtoReflect.Descriptor instead.
+func (*HeartbeatResponse) Descriptor() ([]byte, []int) {
+	return file_http_proto_rawDescGZIP(), []int{3}
+}
+
+// startup reporter protocol
+type StartupReportRequest struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	HostType  StartupReportRequest_HostType `protobuf:"varint,1,opt,name=host_type,json=hostType,proto3,enum=api.StartupReportRequest_HostType" json:"host_type,omitempty"`
+	Hostname  string                        `protobuf:"bytes,2,opt,name=hostname,proto3" json:"hostname,omitempty"`
+	DbType    StartupReportRequest_DBType   `protobuf:"varint,3,opt,name=db_type,json=dbType,proto3,enum=api.StartupReportRequest_DBType" json:"db_type,omitempty"`
+	DbVersion string                        `protobuf:"bytes,4,opt,name=db_version,json=dbVersion,proto3" json:"db_version,omitempty"`
+	IpAddr    string                        `protobuf:"bytes,5,opt,name=ip_addr,json=ipAddr,proto3" json:"ip_addr,omitempty"`
+	Port      int32                         `protobuf:"varint,7,opt,name=port,proto3" json:"port,omitempty"`
+	Os        string                        `protobuf:"bytes,8,opt,name=os,proto3" json:"os,omitempty"`
+	OsVersion string                        `protobuf:"bytes,9,opt,name=os_version,json=osVersion,proto3" json:"os_version,omitempty"`
+}
+
+func (x *StartupReportRequest) Reset() {
+	*x = StartupReportRequest{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_http_proto_msgTypes[4]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *StartupReportRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*StartupReportRequest) ProtoMessage() {}
+
+func (x *StartupReportRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_http_proto_msgTypes[4]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use StartupReportRequest.ProtoReflect.Descriptor instead.
+func (*StartupReportRequest) Descriptor() ([]byte, []int) {
+	return file_http_proto_rawDescGZIP(), []int{4}
+}
+
+func (x *StartupReportRequest) GetHostType() StartupReportRequest_HostType {
+	if x != nil {
+		return x.HostType
+	}
+	return StartupReportRequest_UNKNOWN
+}
+
+func (x *StartupReportRequest) GetHostname() string {
+	if x != nil {
+		return x.Hostname
+	}
+	return ""
+}
+
+func (x *StartupReportRequest) GetDbType() StartupReportRequest_DBType {
+	if x != nil {
+		return x.DbType
+	}
+	return StartupReportRequest_MYSQL
+}
+
+func (x *StartupReportRequest) GetDbVersion() string {
+	if x != nil {
+		return x.DbVersion
+	}
+	return ""
+}
+
+func (x *StartupReportRequest) GetIpAddr() string {
+	if x != nil {
+		return x.IpAddr
+	}
+	return ""
+}
+
+func (x *StartupReportRequest) GetPort() int32 {
+	if x != nil {
+		return x.Port
+	}
+	return 0
+}
+
+func (x *StartupReportRequest) GetOs() string {
+	if x != nil {
+		return x.Os
+	}
+	return ""
+}
+
+func (x *StartupReportRequest) GetOsVersion() string {
+	if x != nil {
+		return x.OsVersion
+	}
+	return ""
+}
+
+type StartupReportResponse struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+}
+
+func (x *StartupReportResponse) Reset() {
+	*x = StartupReportResponse{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_http_proto_msgTypes[5]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *StartupReportResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*StartupReportResponse) ProtoMessage() {}
+
+func (x *StartupReportResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_http_proto_msgTypes[5]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use StartupReportResponse.ProtoReflect.Descriptor instead.
+func (*StartupReportResponse) Descriptor() ([]byte, []int) {
+	return file_http_proto_rawDescGZIP(), []int{5}
+}
+
+type HeartbeatRequest_AgentInfo struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Localip string `protobuf:"bytes,1,opt,name=localip,proto3" json:"localip,omitempty"`
+}
+
+func (x *HeartbeatRequest_AgentInfo) Reset() {
+	*x = HeartbeatRequest_AgentInfo{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_http_proto_msgTypes[6]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *HeartbeatRequest_AgentInfo) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*HeartbeatRequest_AgentInfo) ProtoMessage() {}
+
+func (x *HeartbeatRequest_AgentInfo) ProtoReflect() protoreflect.Message {
+	mi := &file_http_proto_msgTypes[6]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use HeartbeatRequest_AgentInfo.ProtoReflect.Descriptor instead.
+func (*HeartbeatRequest_AgentInfo) Descriptor() ([]byte, []int) {
+	return file_http_proto_rawDescGZIP(), []int{2, 0}
+}
+
+func (x *HeartbeatRequest_AgentInfo) GetLocalip() string {
+	if x != nil {
+		return x.Localip
+	}
+	return ""
+}
+
+type HeartbeatRequest_DBInfo struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Dbtype string `protobuf:"bytes,1,opt,name=dbtype,proto3" json:"dbtype,omitempty"`
+	Port   int32  `protobuf:"varint,2,opt,name=port,proto3" json:"port,omitempty"`
+}
+
+func (x *HeartbeatRequest_DBInfo) Reset() {
+	*x = HeartbeatRequest_DBInfo{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_http_proto_msgTypes[7]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *HeartbeatRequest_DBInfo) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*HeartbeatRequest_DBInfo) ProtoMessage() {}
+
+func (x *HeartbeatRequest_DBInfo) ProtoReflect() protoreflect.Message {
+	mi := &file_http_proto_msgTypes[7]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use HeartbeatRequest_DBInfo.ProtoReflect.Descriptor instead.
+func (*HeartbeatRequest_DBInfo) Descriptor() ([]byte, []int) {
+	return file_http_proto_rawDescGZIP(), []int{2, 1}
+}
+
+func (x *HeartbeatRequest_DBInfo) GetDbtype() string {
+	if x != nil {
+		return x.Dbtype
+	}
+	return ""
+}
+
+func (x *HeartbeatRequest_DBInfo) GetPort() int32 {
+	if x != nil {
+		return x.Port
+	}
+	return 0
+}
+
 var File_http_proto protoreflect.FileDescriptor
 
 var file_http_proto_rawDesc = []byte{
@@ -124,8 +566,51 @@ var file_http_proto_rawDesc = []byte{
 	0x07, 0x0a, 0x05, 0x5f, 0x70, 0x69, 0x6e, 0x67, 0x22, 0x28, 0x0a, 0x12, 0x48, 0x65, 0x6c, 0x6c,
 	0x6f, 0x57, 0x6f, 0x72, 0x6c, 0x64, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x12,
 	0x0a, 0x04, 0x70, 0x61, 0x6e, 0x67, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x04, 0x70, 0x61,
-	0x6e, 0x67, 0x42, 0x07, 0x5a, 0x05, 0x2e, 0x2f, 0x61, 0x70, 0x69, 0x62, 0x06, 0x70, 0x72, 0x6f,
-	0x74, 0x6f, 0x33,
+	0x6e, 0x67, 0x22, 0xe5, 0x01, 0x0a, 0x10, 0x48, 0x65, 0x61, 0x72, 0x74, 0x62, 0x65, 0x61, 0x74,
+	0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x3e, 0x0a, 0x0a, 0x61, 0x67, 0x65, 0x6e, 0x74,
+	0x5f, 0x69, 0x6e, 0x66, 0x6f, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1f, 0x2e, 0x61, 0x70,
+	0x69, 0x2e, 0x48, 0x65, 0x61, 0x72, 0x74, 0x62, 0x65, 0x61, 0x74, 0x52, 0x65, 0x71, 0x75, 0x65,
+	0x73, 0x74, 0x2e, 0x41, 0x67, 0x65, 0x6e, 0x74, 0x49, 0x6e, 0x66, 0x6f, 0x52, 0x09, 0x61, 0x67,
+	0x65, 0x6e, 0x74, 0x49, 0x6e, 0x66, 0x6f, 0x12, 0x34, 0x0a, 0x06, 0x64, 0x62, 0x49, 0x6e, 0x66,
+	0x6f, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1c, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x48, 0x65,
+	0x61, 0x72, 0x74, 0x62, 0x65, 0x61, 0x74, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x2e, 0x44,
+	0x42, 0x49, 0x6e, 0x66, 0x6f, 0x52, 0x06, 0x64, 0x62, 0x49, 0x6e, 0x66, 0x6f, 0x1a, 0x25, 0x0a,
+	0x09, 0x41, 0x67, 0x65, 0x6e, 0x74, 0x49, 0x6e, 0x66, 0x6f, 0x12, 0x18, 0x0a, 0x07, 0x6c, 0x6f,
+	0x63, 0x61, 0x6c, 0x69, 0x70, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x6c, 0x6f, 0x63,
+	0x61, 0x6c, 0x69, 0x70, 0x1a, 0x34, 0x0a, 0x06, 0x44, 0x42, 0x49, 0x6e, 0x66, 0x6f, 0x12, 0x16,
+	0x0a, 0x06, 0x64, 0x62, 0x74, 0x79, 0x70, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x06,
+	0x64, 0x62, 0x74, 0x79, 0x70, 0x65, 0x12, 0x12, 0x0a, 0x04, 0x70, 0x6f, 0x72, 0x74, 0x18, 0x02,
+	0x20, 0x01, 0x28, 0x05, 0x52, 0x04, 0x70, 0x6f, 0x72, 0x74, 0x22, 0x13, 0x0a, 0x11, 0x48, 0x65,
+	0x61, 0x72, 0x74, 0x62, 0x65, 0x61, 0x74, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22,
+	0x9f, 0x03, 0x0a, 0x14, 0x53, 0x74, 0x61, 0x72, 0x74, 0x75, 0x70, 0x52, 0x65, 0x70, 0x6f, 0x72,
+	0x74, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x3f, 0x0a, 0x09, 0x68, 0x6f, 0x73, 0x74,
+	0x5f, 0x74, 0x79, 0x70, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x22, 0x2e, 0x61, 0x70,
+	0x69, 0x2e, 0x53, 0x74, 0x61, 0x72, 0x74, 0x75, 0x70, 0x52, 0x65, 0x70, 0x6f, 0x72, 0x74, 0x52,
+	0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x2e, 0x48, 0x6f, 0x73, 0x74, 0x54, 0x79, 0x70, 0x65, 0x52,
+	0x08, 0x68, 0x6f, 0x73, 0x74, 0x54, 0x79, 0x70, 0x65, 0x12, 0x1a, 0x0a, 0x08, 0x68, 0x6f, 0x73,
+	0x74, 0x6e, 0x61, 0x6d, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x68, 0x6f, 0x73,
+	0x74, 0x6e, 0x61, 0x6d, 0x65, 0x12, 0x39, 0x0a, 0x07, 0x64, 0x62, 0x5f, 0x74, 0x79, 0x70, 0x65,
+	0x18, 0x03, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x20, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x53, 0x74, 0x61,
+	0x72, 0x74, 0x75, 0x70, 0x52, 0x65, 0x70, 0x6f, 0x72, 0x74, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73,
+	0x74, 0x2e, 0x44, 0x42, 0x54, 0x79, 0x70, 0x65, 0x52, 0x06, 0x64, 0x62, 0x54, 0x79, 0x70, 0x65,
+	0x12, 0x1d, 0x0a, 0x0a, 0x64, 0x62, 0x5f, 0x76, 0x65, 0x72, 0x73, 0x69, 0x6f, 0x6e, 0x18, 0x04,
+	0x20, 0x01, 0x28, 0x09, 0x52, 0x09, 0x64, 0x62, 0x56, 0x65, 0x72, 0x73, 0x69, 0x6f, 0x6e, 0x12,
+	0x17, 0x0a, 0x07, 0x69, 0x70, 0x5f, 0x61, 0x64, 0x64, 0x72, 0x18, 0x05, 0x20, 0x01, 0x28, 0x09,
+	0x52, 0x06, 0x69, 0x70, 0x41, 0x64, 0x64, 0x72, 0x12, 0x12, 0x0a, 0x04, 0x70, 0x6f, 0x72, 0x74,
+	0x18, 0x07, 0x20, 0x01, 0x28, 0x05, 0x52, 0x04, 0x70, 0x6f, 0x72, 0x74, 0x12, 0x0e, 0x0a, 0x02,
+	0x6f, 0x73, 0x18, 0x08, 0x20, 0x01, 0x28, 0x09, 0x52, 0x02, 0x6f, 0x73, 0x12, 0x1d, 0x0a, 0x0a,
+	0x6f, 0x73, 0x5f, 0x76, 0x65, 0x72, 0x73, 0x69, 0x6f, 0x6e, 0x18, 0x09, 0x20, 0x01, 0x28, 0x09,
+	0x52, 0x09, 0x6f, 0x73, 0x56, 0x65, 0x72, 0x73, 0x69, 0x6f, 0x6e, 0x22, 0x3d, 0x0a, 0x08, 0x48,
+	0x6f, 0x73, 0x74, 0x54, 0x79, 0x70, 0x65, 0x12, 0x0b, 0x0a, 0x07, 0x55, 0x4e, 0x4b, 0x4e, 0x4f,
+	0x57, 0x4e, 0x10, 0x00, 0x12, 0x08, 0x0a, 0x04, 0x53, 0x45, 0x4c, 0x46, 0x10, 0x01, 0x12, 0x0a,
+	0x0a, 0x06, 0x41, 0x4c, 0x49, 0x59, 0x55, 0x4e, 0x10, 0x02, 0x12, 0x0e, 0x0a, 0x0a, 0x54, 0x45,
+	0x4e, 0x43, 0x45, 0x4e, 0x54, 0x59, 0x55, 0x4e, 0x10, 0x03, 0x22, 0x35, 0x0a, 0x06, 0x44, 0x42,
+	0x54, 0x79, 0x70, 0x65, 0x12, 0x09, 0x0a, 0x05, 0x4d, 0x59, 0x53, 0x51, 0x4c, 0x10, 0x00, 0x12,
+	0x08, 0x0a, 0x04, 0x54, 0x49, 0x44, 0x42, 0x10, 0x01, 0x12, 0x09, 0x0a, 0x05, 0x52, 0x45, 0x44,
+	0x49, 0x53, 0x10, 0x02, 0x12, 0x0b, 0x0a, 0x07, 0x4d, 0x4f, 0x4e, 0x47, 0x4f, 0x44, 0x42, 0x10,
+	0x03, 0x22, 0x17, 0x0a, 0x15, 0x53, 0x74, 0x61, 0x72, 0x74, 0x75, 0x70, 0x52, 0x65, 0x70, 0x6f,
+	0x72, 0x74, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x42, 0x07, 0x5a, 0x05, 0x2e, 0x2f,
+	0x61, 0x70, 0x69, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -140,17 +625,30 @@ func file_http_proto_rawDescGZIP() []byte {
 	return file_http_proto_rawDescData
 }
 
-var file_http_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
+var file_http_proto_enumTypes = make([]protoimpl.EnumInfo, 2)
+var file_http_proto_msgTypes = make([]protoimpl.MessageInfo, 8)
 var file_http_proto_goTypes = []interface{}{
-	(*HelloWorldRequest)(nil),  // 0: api.HelloWorldRequest
-	(*HelloWorldResponse)(nil), // 1: api.HelloWorldResponse
+	(StartupReportRequest_HostType)(0), // 0: api.StartupReportRequest.HostType
+	(StartupReportRequest_DBType)(0),   // 1: api.StartupReportRequest.DBType
+	(*HelloWorldRequest)(nil),          // 2: api.HelloWorldRequest
+	(*HelloWorldResponse)(nil),         // 3: api.HelloWorldResponse
+	(*HeartbeatRequest)(nil),           // 4: api.HeartbeatRequest
+	(*HeartbeatResponse)(nil),          // 5: api.HeartbeatResponse
+	(*StartupReportRequest)(nil),       // 6: api.StartupReportRequest
+	(*StartupReportResponse)(nil),      // 7: api.StartupReportResponse
+	(*HeartbeatRequest_AgentInfo)(nil), // 8: api.HeartbeatRequest.AgentInfo
+	(*HeartbeatRequest_DBInfo)(nil),    // 9: api.HeartbeatRequest.DBInfo
 }
 var file_http_proto_depIdxs = []int32{
-	0, // [0:0] is the sub-list for method output_type
-	0, // [0:0] is the sub-list for method input_type
-	0, // [0:0] is the sub-list for extension type_name
-	0, // [0:0] is the sub-list for extension extendee
-	0, // [0:0] is the sub-list for field type_name
+	8, // 0: api.HeartbeatRequest.agent_info:type_name -> api.HeartbeatRequest.AgentInfo
+	9, // 1: api.HeartbeatRequest.dbInfo:type_name -> api.HeartbeatRequest.DBInfo
+	0, // 2: api.StartupReportRequest.host_type:type_name -> api.StartupReportRequest.HostType
+	1, // 3: api.StartupReportRequest.db_type:type_name -> api.StartupReportRequest.DBType
+	4, // [4:4] is the sub-list for method output_type
+	4, // [4:4] is the sub-list for method input_type
+	4, // [4:4] is the sub-list for extension type_name
+	4, // [4:4] is the sub-list for extension extendee
+	0, // [0:4] is the sub-list for field type_name
 }
 
 func init() { file_http_proto_init() }
@@ -183,6 +681,78 @@ func file_http_proto_init() {
 				return nil
 			}
 		}
+		file_http_proto_msgTypes[2].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*HeartbeatRequest); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_http_proto_msgTypes[3].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*HeartbeatResponse); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_http_proto_msgTypes[4].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*StartupReportRequest); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_http_proto_msgTypes[5].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*StartupReportResponse); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_http_proto_msgTypes[6].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*HeartbeatRequest_AgentInfo); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_http_proto_msgTypes[7].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*HeartbeatRequest_DBInfo); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
 	}
 	file_http_proto_msgTypes[0].OneofWrappers = []interface{}{}
 	type x struct{}
@@ -190,13 +760,14 @@ func file_http_proto_init() {
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_http_proto_rawDesc,
-			NumEnums:      0,
-			NumMessages:   2,
+			NumEnums:      2,
+			NumMessages:   8,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
 		GoTypes:           file_http_proto_goTypes,
 		DependencyIndexes: file_http_proto_depIdxs,
+		EnumInfos:         file_http_proto_enumTypes,
 		MessageInfos:      file_http_proto_msgTypes,
 	}.Build()
 	File_http_proto = out.File

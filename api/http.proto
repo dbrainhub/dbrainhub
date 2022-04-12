@@ -13,3 +13,52 @@ message HelloWorldRequest {
 message HelloWorldResponse {
     string pang = 1;
 }
+
+// heartbeat protocol
+message HeartbeatRequest {
+    message AgentInfo {
+        string localip = 1;
+    }
+    AgentInfo agent_info = 1;
+
+    message DBInfo {
+        string dbtype = 1;
+        int32 port = 2;
+    }
+    DBInfo dbInfo = 2;
+}
+
+message HeartbeatResponse {
+}
+
+// startup reporter protocol
+message StartupReportRequest {
+    enum HostType {
+        UNKNOWN = 0;
+        SELF = 1;
+        ALIYUN = 2;
+        TENCENTYUN = 3;
+    }
+    HostType host_type = 1;
+    
+    string hostname = 2;
+    
+    enum DBType {
+        MYSQL = 0;
+        TIDB = 1;
+        REDIS = 2;
+        MONGODB = 3;
+    }
+    DBType db_type = 3;
+
+    string db_version = 4;
+    string ip_addr = 5;
+    int32 port = 7;
+    string os = 8;
+    string os_version = 9;
+
+}
+
+message StartupReportResponse {
+
+}

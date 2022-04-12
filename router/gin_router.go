@@ -21,6 +21,8 @@ func (g *ginRouter) Init() {
 	g.server.Use(gin.Recovery())
 
 	g.server.POST("/hello_world", handlerWapper(handler.SayHello))
+	g.server.POST("/heartbeat", handlerWapper(handler.Heartbeat))
+	g.server.POST("/report", handlerWapper(handler.Report))
 }
 
 func (g *ginRouter) GetHandler() http.Handler {

@@ -11,7 +11,7 @@ func ReadFile(filePath string) (string, error) {
 }
 
 func OverwriteToFile(filePath string, content string) error {
-	f, err := os.OpenFile(filePath, os.O_WRONLY|os.O_CREATE, 0666)
+	f, err := os.OpenFile(filePath, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0666)
 	if err != nil {
 		return err
 	}
