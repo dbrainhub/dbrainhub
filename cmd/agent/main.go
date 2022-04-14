@@ -8,6 +8,8 @@ import (
 
 	"github.com/dbrainhub/dbrainhub/agent"
 	"github.com/dbrainhub/dbrainhub/configs"
+	"github.com/dbrainhub/dbrainhub/dbs"
+	"github.com/dbrainhub/dbrainhub/dbs/mysql"
 	"github.com/dbrainhub/dbrainhub/filebeat"
 	"github.com/dbrainhub/dbrainhub/utils/logger"
 )
@@ -27,7 +29,13 @@ func main() {
 	logger.InitLog(config.LogInfo.LogDir, config.LogInfo.Name, config.LogInfo.Level)
 
 	ctx := context.Background()
-	reporter, err := agent.NewStartupReporter(config)
+	dbOperationFactory := mysql.NewMysqlOperationFactory(&dbs.DBInfo{
+		IP:     "127.0.0.1",
+		Port:   config.DB.Port,
+		User:   config.DB.User,
+		Passwd: config.DB.Passwd,
+	})
+	reporter, err := agent.NewStartupReporter(config, dbOperationFactory)
 	if err != nil {
 		logger.Errorf("new server reporter error, exit...")
 		return
@@ -37,7 +45,7 @@ func main() {
 		return
 	}
 
-	filebeatService, err := filebeat.NewFilebeatService(config)
+	filebeatService, err := filebeat.NewFilebeatService(config, dbOperationFactory)
 	if err != nil {
 		logger.Errorf("create FilebeatService failed , exit...")
 		return

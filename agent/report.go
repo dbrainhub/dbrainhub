@@ -10,6 +10,7 @@ import (
 
 	"github.com/dbrainhub/dbrainhub/api"
 	"github.com/dbrainhub/dbrainhub/configs"
+	"github.com/dbrainhub/dbrainhub/dbs"
 	"github.com/dbrainhub/dbrainhub/errors"
 	"github.com/dbrainhub/dbrainhub/utils"
 	"github.com/dbrainhub/dbrainhub/utils/logger"
@@ -22,11 +23,17 @@ type StartupReporter interface {
 	Report(ctx context.Context) error
 }
 
-func NewStartupReporter(agentConf *configs.AgentConfig) (StartupReporter, error) {
+func NewStartupReporter(agentConf *configs.AgentConfig, df dbs.DBOperationFactory) (StartupReporter, error) {
 	dbtype, err := agentConf.ConvertDBType()
 	if err != nil {
 		logger.Errorf("get dbtype from agentconf error, err: %v", err)
 		return nil, errors.AgentConfigError("db_type error")
+	}
+
+	dbVersionQuerier, err := df.CreateVersionQuerier()
+	if err != nil {
+		logger.Errorf("createVersionQuerier error, err: %v", err)
+		return nil, err
 	}
 
 	httpClient := utils.NewHttpClient(time.Millisecond*time.Duration(agentConf.Server.TimeoutMs),
@@ -34,11 +41,12 @@ func NewStartupReporter(agentConf *configs.AgentConfig) (StartupReporter, error)
 		time.Duration(agentConf.Server.RetryIntervalMs)*time.Millisecond)
 
 	return &startupReportImpl{
-		hostType:   agentConf.ConvertHostType(),
-		dbType:     dbtype,
-		port:       agentConf.DB.Port,
-		serverAddr: agentConf.Server.Addr,
-		client:     httpClient,
+		hostType:         agentConf.ConvertHostType(),
+		dbType:           dbtype,
+		port:             agentConf.DB.Port,
+		serverAddr:       agentConf.Server.Addr,
+		client:           httpClient,
+		dbVersionQuerier: dbVersionQuerier,
 	}, nil
 }
 
@@ -47,8 +55,9 @@ type startupReportImpl struct {
 	hostType api.StartupReportRequest_HostType
 	port     int
 
-	serverAddr string
-	client     utils.HttpClient
+	serverAddr       string
+	dbVersionQuerier dbs.DBVersionQuerier
+	client           utils.HttpClient
 }
 
 func (s *startupReportImpl) Report(ctx context.Context) error {
@@ -61,6 +70,10 @@ func (s *startupReportImpl) Report(ctx context.Context) error {
 		logger.Errorf("getlocalIP in startupReport error, err: %v", err)
 		return err
 	}
+	dbVersion, err := s.dbVersionQuerier.Query(ctx)
+	if err != nil { // don't return
+		logger.Errorf("queryDBVersion error, err: %v", err)
+	}
 	req := &api.StartupReportRequest{
 		DbType:    api.StartupReportRequest_DBType(s.dbType),
 		HostType:  api.StartupReportRequest_HostType(s.hostType),
@@ -69,7 +82,7 @@ func (s *startupReportImpl) Report(ctx context.Context) error {
 		Port:      int32(s.port),
 		Os:        runtime.GOOS,
 		OsVersion: "", // TODO: 不同系统的获取方式不同。
-		DbVersion: "",
+		DbVersion: dbVersion.Version,
 	}
 	reqBytes, err := json.Marshal(req)
 	if err != nil {
