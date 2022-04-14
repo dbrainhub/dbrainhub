@@ -22,7 +22,7 @@ func GetDB(ctx context.Context) *gorm.DB {
 	once.Do(func() {
 		var err error
 
-		c := &configs.GetGlobalConfig().DB
+		c := &configs.GetGlobalServerConfig().DB
 		gormCfg := &gorm.Config{
 			NamingStrategy: schema.NamingStrategy{SingularTable: true},
 		}

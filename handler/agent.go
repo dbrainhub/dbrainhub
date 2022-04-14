@@ -29,12 +29,20 @@ func (ol *OffsetLimit) AutoAdjust() {
 	}
 }
 
-func SayHello(c *gin.Context) (interface{}, error) {
-	var req *api.HelloWorldRequest
+func Heartbeat(c *gin.Context) (interface{}, error) {
+	var req *api.HeartbeatRequest
 	err := c.ShouldBindJSON(&req)
 	if err != nil {
 		return nil, BadRequestError("input unsharmal err: %v", err)
 	}
-	return controller.NewController().SayHello(c, req)
+	return controller.Heartbeat(c, req)
+}
 
+func Report(c *gin.Context) (interface{}, error) {
+	var req *api.StartupReportRequest
+	err := c.ShouldBindJSON(&req)
+	if err != nil {
+		return nil, BadRequestError("input unsharmal err: %v", err)
+	}
+	return controller.Report(c, req)
 }

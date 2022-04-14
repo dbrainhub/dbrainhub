@@ -20,7 +20,10 @@ func (g *ginRouter) Init() {
 	g.server.Use(StatMiddleware)
 	g.server.Use(gin.Recovery())
 
-	g.server.POST("/hello_world", handlerWapper(handler.SayHello))
+	// agent
+	g.server.POST("/agent/heartbeat", handlerWapper(handler.Heartbeat))
+	g.server.POST("/agent/report", handlerWapper(handler.Report))
+
 	// dbcluster
 	g.server.POST("/dbclusters", handlerWapper(handler.CreateDbCluster))
 	g.server.GET("/dbclusters", handlerWapper(handler.GetDbClusters))

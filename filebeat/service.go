@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/dbrainhub/dbrainhub/configs"
 	"github.com/dbrainhub/dbrainhub/errors"
 	"github.com/dbrainhub/dbrainhub/model"
 	"github.com/dbrainhub/dbrainhub/utils"
@@ -14,20 +15,60 @@ import (
 
 const (
 	DBTypeMysql = "mysql"
+	LocalHost   = "127.0.0.1"
 )
+
+type (
+	FilebeatService interface {
+		StartGatherSlowlog(ctx context.Context) error
+	}
+)
+
+func NewFilebeatService(agentConf *configs.AgentConfig) (FilebeatService, error) {
+	localip, err := utils.GetLocalIP()
+	if err != nil {
+		logger.Errorf("get local ip error, err: %v", err)
+		return nil, err
+	}
+	return &filebeatService{
+		dbInfo: &DBInfo{
+			IP:     LocalHost,
+			Port:   agentConf.DB.Port,
+			User:   agentConf.DB.User,
+			Passwd: agentConf.DB.Passwd,
+		},
+		localip:     localip,
+		dbtype:      agentConf.DB.DBType,
+		serverAddrs: []string{agentConf.Server.Addr},
+
+		filebeatConfTemplateFile: agentConf.Filebeat.FilebeatConfTemplate,
+		moduleConfTemplateFile:   agentConf.Filebeat.ModuleConfTemplate,
+
+		moduleConfDir:     fmt.Sprintf("%s/modules.d", agentConf.Filebeat.HomePath),
+		executionFilePath: fmt.Sprintf("%s/filebeat", agentConf.Filebeat.HomePath),
+		homePath:          agentConf.Filebeat.HomePath,
+		confFilePath:      fmt.Sprintf("%s/filebeat.yml", agentConf.Filebeat.HomePath),
+
+		aliveListenerInterval:          time.Duration(agentConf.Filebeat.AliveListenerIntervalMs) * time.Millisecond,
+		aliveListenerHttpRetry:         agentConf.Filebeat.AliveListenerHttpRetry,
+		aliveListenerHttpRetryInterval: time.Duration(agentConf.Filebeat.AliveListenerRetryIntervalMs) * time.Millisecond,
+		slowlogListenerInterval:        time.Duration(agentConf.Filebeat.SlowlogListenerIntervalMs) * time.Millisecond,
+		filebeatStartupTimeout:         time.Duration(agentConf.Filebeat.StartupTimeoutMs) * time.Millisecond,
+	}, nil
+}
 
 type filebeatService struct {
 	filebeatConf *model.FilebeatConf
 
-	dbInfo *DBInfo
-	dbtype string
+	localip string
+	dbInfo  *DBInfo
+	dbtype  string
 
 	// conf template
 	filebeatConfTemplateFile string
-	moduleConfTemplateDir    string
+	moduleConfTemplateFile   string
 
-	filebeatConfPath string
-	moduleConfDir    string
+	moduleConfDir string
 
 	// dbrainhub server addrs
 	serverAddrs []string
@@ -87,7 +128,7 @@ func (f *filebeatService) startAliveListener(ctx context.Context) {
 		default:
 		}
 	}
-	NewAliveListener(fmt.Sprintf("127.0.0.1:%d", f.filebeatConf.HttpInfo.Port),
+	NewAliveListener(fmt.Sprintf("%s:%d", LocalHost, f.filebeatConf.HttpInfo.Port),
 		utils.NewHttpClient(f.aliveListenerInterval, f.aliveListenerHttpRetry, f.aliveListenerHttpRetryInterval),
 		f.aliveListenerInterval,
 		&AliveListenerCallback{
@@ -98,6 +139,7 @@ func (f *filebeatService) startAliveListener(ctx context.Context) {
 	select {
 	case <-firstSuccChan:
 	case <-time.After(f.filebeatStartupTimeout):
+		logger.Errorf("filebeat startup timeout")
 		panic("filebeat startup timeout ...")
 	}
 
@@ -154,19 +196,20 @@ func (f *filebeatService) generateFilebeatConf() error {
 		return err
 	}
 
-	filebeatConfStr := NewFilebeatConfGenerator(f.serverAddrs).Generate(filebeatConfTemplate)
-	if err := utils.OverwriteToFile(f.filebeatConfPath, filebeatConfStr); err != nil {
-		logger.Errorf("write to filebeat conf file error, file: %s, err: %v", f.filebeatConfPath, err)
+	filebeatConfStr := NewFilebeatConfGenerator(f.localip, f.dbInfo.Port, f.serverAddrs).Generate(filebeatConfTemplate)
+	if err := utils.OverwriteToFile(f.confFilePath, filebeatConfStr); err != nil {
+		logger.Errorf("write to filebeat conf file error, file: %s, err: %v", f.confFilePath, err)
 		return err
 	}
-	return nil
+	f.filebeatConf, err = model.NewFileBeatConfFactory().NewFilebeatConf(filebeatConfStr)
+	return err
 }
 
 // template file -> module conf file
 func (f *filebeatService) generateModuleConf(inputPaths string) error {
-	moduleConfTemplate, err := utils.ReadFile(f.getModuleTemplateFilePath())
+	moduleConfTemplate, err := utils.ReadFile(f.moduleConfTemplateFile)
 	if err != nil {
-		logger.Errorf("read module conf file error, file: %s, err: %v", f.getModuleTemplateFilePath(), err)
+		logger.Errorf("read module conf file error, file: %s, err: %v", f.moduleConfTemplateFile, err)
 		return errors.AgentConfigError("read module_conf error")
 	}
 
@@ -181,10 +224,6 @@ func (f *filebeatService) generateModuleConf(inputPaths string) error {
 		return err
 	}
 	return nil
-}
-
-func (f *filebeatService) getModuleTemplateFilePath() string {
-	return fmt.Sprintf("%s/%s.yml", f.moduleConfTemplateDir, f.dbtype)
 }
 
 func (f *filebeatService) getModuleFilePath() string {

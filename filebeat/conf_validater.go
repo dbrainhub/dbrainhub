@@ -27,7 +27,7 @@ func (c *confValidator) ValidateFilebeatConf(template string) error {
 	}
 
 	// can configure output?
-	if err := NewFilebeatConfGenerator(nil).CanGenerate(conf); err != nil {
+	if err := NewFilebeatConfGenerator("", 0, nil).CanGenerate(conf); err != nil {
 		return err
 	}
 

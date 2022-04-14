@@ -73,7 +73,7 @@ func DbClusterMemberNotFoundById(id int32) *ErrInfo {
 	return DbClusterMemberNotFound(msg)
 }
 func DbClusterMemberNotFoundByIpAndPort(ipAddr string, port int16) *ErrInfo {
-	msg := fmt.Sprintf("dbcluster_member with ip=%s and port=%s not found", ipAddr, port)
+	msg := fmt.Sprintf("dbcluster_member with ip=%s and port=%d not found", ipAddr, port)
 	return DbClusterMemberNotFound(msg)
 }
 
@@ -81,7 +81,7 @@ func DbClusterMemberNotAssigned(msg string) *ErrInfo {
 	return newErrInfo(4001, "DbClusterMemberNotAssigned", msg)
 }
 
-// 500-5999 tag 相关
+// 5000-5999 tag 相关
 func InvalidItemType(msg string) *ErrInfo {
 	return newErrInfo(5000, "InvalidItemType", msg)
 }

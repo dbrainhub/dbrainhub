@@ -23,7 +23,7 @@ var once = sync.Once{}
 func GetRateLimiterAndEsClient(ctx context.Context) (*rate_limit.SlidingWindowRateLimiter, *esClient.Client) {
 	var err error
 	once.Do(func() {
-		cfg := configs.GetGlobalConfig().OutputServer
+		cfg := configs.GetGlobalServerConfig().OutputServer
 		limiter = rate_limit.NewSlidingWindowRateLimiter(int64(cfg.QpsThreshold))
 
 		esCfg := esClient.Config{
