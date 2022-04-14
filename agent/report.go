@@ -15,7 +15,7 @@ import (
 	"github.com/dbrainhub/dbrainhub/utils/logger"
 )
 
-const StartupReportPath = "/report"
+const StartupReportPath = "/agent/report"
 
 // report after startup
 type StartupReporter interface {
@@ -29,9 +29,9 @@ func NewStartupReporter(agentConf *configs.AgentConfig) (StartupReporter, error)
 		return nil, errors.AgentConfigError("db_type error")
 	}
 
-	httpClient := utils.NewHttpClient(time.Millisecond*time.Duration(agentConf.Server.Timeout),
+	httpClient := utils.NewHttpClient(time.Millisecond*time.Duration(agentConf.Server.TimeoutMs),
 		agentConf.Server.Retry,
-		time.Duration(agentConf.Server.RetryInterval)*time.Millisecond)
+		time.Duration(agentConf.Server.RetryIntervalMs)*time.Millisecond)
 
 	return &startupReportImpl{
 		hostType:   agentConf.ConvertHostType(),
@@ -69,6 +69,7 @@ func (s *startupReportImpl) Report(ctx context.Context) error {
 		Port:      int32(s.port),
 		Os:        runtime.GOOS,
 		OsVersion: "", // TODO: 不同系统的获取方式不同。
+		DbVersion: "",
 	}
 	reqBytes, err := json.Marshal(req)
 	if err != nil {

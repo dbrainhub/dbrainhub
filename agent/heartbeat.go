@@ -12,18 +12,18 @@ import (
 	"github.com/dbrainhub/dbrainhub/utils/logger"
 )
 
-const HeartbeatPath = "/heartbeat"
+const HeartbeatPath = "/agent/heartbeat"
 
 type HeartbeatService interface {
 	Run(ctx context.Context)
 }
 
 func NewHeartbeatService(agentConf *configs.AgentConfig) HeartbeatService {
-	httpClient := utils.NewHttpClient(time.Millisecond*time.Duration(agentConf.Server.Timeout),
+	httpClient := utils.NewHttpClient(time.Millisecond*time.Duration(agentConf.Server.TimeoutMs),
 		agentConf.Server.Retry,
-		time.Duration(agentConf.Server.RetryInterval)*time.Millisecond)
+		time.Duration(agentConf.Server.RetryIntervalMs)*time.Millisecond)
 	return &heartbeatImpl{
-		interval:   time.Duration(agentConf.Server.HeartbeatInterval) * time.Millisecond,
+		interval:   time.Duration(agentConf.Server.HeartbeatIntervalMs) * time.Millisecond,
 		serverAddr: agentConf.Server.Addr,
 		dbType:     agentConf.DB.DBType,
 		Port:       agentConf.DB.Port,

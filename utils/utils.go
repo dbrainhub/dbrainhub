@@ -18,5 +18,5 @@ func GetLocalIP() (string, error) {
 			}
 		}
 	}
-	return "", fmt.Errorf("no invalid ip")
+	return "", fmt.Errorf("no valid ip")
 }

@@ -49,11 +49,11 @@ func NewFilebeatService(agentConf *configs.AgentConfig) (FilebeatService, error)
 		homePath:          agentConf.Filebeat.HomePath,
 		confFilePath:      fmt.Sprintf("%s/filebeat.yml", agentConf.Filebeat.HomePath),
 
-		aliveListenerInterval:          time.Duration(agentConf.Filebeat.AliveListenerInterval) * time.Millisecond,
+		aliveListenerInterval:          time.Duration(agentConf.Filebeat.AliveListenerIntervalMs) * time.Millisecond,
 		aliveListenerHttpRetry:         agentConf.Filebeat.AliveListenerHttpRetry,
-		aliveListenerHttpRetryInterval: time.Duration(agentConf.Filebeat.AliveListenerRetryInterval) * time.Millisecond,
-		slowlogListenerInterval:        time.Duration(agentConf.Filebeat.SlowlogListenerInterval) * time.Millisecond,
-		filebeatStartupTimeout:         time.Duration(agentConf.Filebeat.StartupTimeout) * time.Millisecond,
+		aliveListenerHttpRetryInterval: time.Duration(agentConf.Filebeat.AliveListenerRetryIntervalMs) * time.Millisecond,
+		slowlogListenerInterval:        time.Duration(agentConf.Filebeat.SlowlogListenerIntervalMs) * time.Millisecond,
+		filebeatStartupTimeout:         time.Duration(agentConf.Filebeat.StartupTimeoutMs) * time.Millisecond,
 	}, nil
 }
 

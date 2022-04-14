@@ -16,11 +16,11 @@ type AgentConfig struct {
 	} `toml:"db"`
 
 	Server struct {
-		Addr              string `toml:"addr"` // TODO: 扩展成多个
-		Timeout           int    `toml:"http_timeout"`
-		Retry             int    `toml:"http_retry"`
-		RetryInterval     int    `toml:"http_retry_interval"`
-		HeartbeatInterval int    `toml:"heartbeat_interval"`
+		Addr                string `toml:"addr"` // TODO: 扩展成多个
+		TimeoutMs           int    `toml:"http_timeout_ms"`
+		Retry               int    `toml:"http_retry"`
+		RetryIntervalMs     int    `toml:"http_retry_interval_ms"`
+		HeartbeatIntervalMs int    `toml:"heartbeat_interval_ms"`
 	} `toml:"server"`
 
 	LogInfo struct {
@@ -30,15 +30,15 @@ type AgentConfig struct {
 	} `toml:"log_info"`
 
 	Filebeat struct {
-		FilebeatConfTemplate       string `toml:"filebeat_conf_template"`
-		ModuleConfTemplate         string `toml:"module_conf_template"`
-		HomePath                   string `toml:"home_path"`
-		AliveListenerInterval      int    `toml:"alive_listener_interval"`
-		AliveListenerTimeout       int    `toml:"alive_listener_http_timeout"`
-		AliveListenerHttpRetry     int    `toml:"alive_listener_http_retry"`
-		AliveListenerRetryInterval int    `toml:"alive_listener_http_retry_interval"`
-		SlowlogListenerInterval    int    `toml:"slowlog_listener_interval"`
-		StartupTimeout             int    `toml:"startup_timeout"`
+		FilebeatConfTemplate         string `toml:"filebeat_conf_template"`
+		ModuleConfTemplate           string `toml:"module_conf_template"`
+		HomePath                     string `toml:"home_path"`
+		AliveListenerIntervalMs      int    `toml:"alive_listener_interval_ms"`
+		AliveListenerTimeoutMs       int    `toml:"alive_listener_http_timeout_ms"`
+		AliveListenerHttpRetry       int    `toml:"alive_listener_http_retry"`
+		AliveListenerRetryIntervalMs int    `toml:"alive_listener_http_retry_interval_ms"`
+		SlowlogListenerIntervalMs    int    `toml:"slowlog_listener_interval_ms"`
+		StartupTimeoutMs             int    `toml:"startup_timeout_ms"`
 	}
 }
 

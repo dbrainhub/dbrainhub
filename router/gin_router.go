@@ -21,8 +21,8 @@ func (g *ginRouter) Init() {
 	g.server.Use(gin.Recovery())
 
 	// agent
-	g.server.POST("/heartbeat", handlerWapper(handler.Heartbeat))
-	g.server.POST("/report", handlerWapper(handler.Report))
+	g.server.POST("/agent/heartbeat", handlerWapper(handler.Heartbeat))
+	g.server.POST("/agent/report", handlerWapper(handler.Report))
 
 	// dbcluster
 	g.server.POST("/dbclusters", handlerWapper(handler.CreateDbCluster))
