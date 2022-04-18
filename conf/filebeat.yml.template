@@ -1,0 +1,17 @@
+output.dbrainhub:
+  hosts: ["$output_hosts"]
+  batch_size: 20480
+  retry_limit: 5
+  timeout: 2
+  db_ip: "$localip"
+  db_port: $port
+
+http.enabled: true
+http.host: localhost
+http.port: 5066
+
+filebeat.config.modules:
+    enabled: true
+    path: modules.d/*.yml
+    reload.enabled: true
+    reload.period: 10s

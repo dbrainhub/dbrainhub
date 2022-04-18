@@ -12,6 +12,9 @@ output.dbrainhub:
   batch_size: 20480
   retry_limit: 5
   timeout: 2
+  db_ip: "$localip"
+  db_port: $port
+
 
 http.enabled: true
 http.host: localhost
@@ -34,6 +37,8 @@ func TestNewFilebeatConf(t *testing.T) {
 
 	assert.Equal(t, config.RainhubOutput.Hosts[0], "127.0.0.1:10010")
 	assert.Equal(t, config.RainhubOutput.BatchSize, 20480)
+	assert.Equal(t, config.RainhubOutput.DBIP, "$localip")
+	assert.Equal(t, config.RainhubOutput.DBPort, "$port")
 
 	assert.Equal(t, config.FilebeatModule.Path, "modules.d/*.yml")
 	assert.Equal(t, config.FilebeatModule.ReloadEnabled, true)

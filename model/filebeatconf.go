@@ -35,6 +35,10 @@ type (
 		BatchSize  int      `config:"batch_size"`
 		RetryLimit int      `config:"retry_limit"`
 		Timeout    int      `config:"timeout"`
+		DBIP       string   `config:"db_ip"`
+		// port is a interger, but there must be a placeholder in conf_generater,
+		// and there is no difference for interger and string in yaml, so here use string
+		DBPort string `config:"db_port"`
 	}
 )
 

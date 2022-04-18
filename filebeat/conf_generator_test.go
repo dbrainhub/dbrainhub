@@ -7,16 +7,46 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestConfGenImpl_CanGenerateFilebeatConf_Error(t *testing.T) {
+func TestConfGenImpl_CanGenerateFilebeatConf_ErrorForHosts(t *testing.T) {
 	var confContent = `
 output.dbrainhub:
   hosts: ["127.0.0.1:10010",""]
   batch_size: 20480
   retry_limit: 5
-  timeout: 2`
+  timeout: 2
+  db_ip: "$localip"
+  db_port: $port`
 	conf, err := model.NewFileBeatConfFactory().NewFilebeatConf(confContent)
 	assert.Nil(t, err)
-	assert.Error(t, NewFilebeatConfGenerator(nil).CanGenerate(conf))
+	assert.Error(t, NewFilebeatConfGenerator("", 0, nil).CanGenerate(conf))
+}
+
+func TestConfGenImpl_CanGenerateFilebeatConf_ErrorForLocalip(t *testing.T) {
+	var confContent = `
+output.dbrainhub:
+  hosts: ["127.0.0.1:10010","$output_hosts"]
+  batch_size: 20480
+  retry_limit: 5
+  timeout: 2
+  db_ip: "127.0.0.1"
+  db_port: $port`
+	conf, err := model.NewFileBeatConfFactory().NewFilebeatConf(confContent)
+	assert.Nil(t, err)
+	assert.Error(t, NewFilebeatConfGenerator("", 0, nil).CanGenerate(conf))
+}
+
+func TestConfGenImpl_CanGenerateFilebeatConf_ErrorForPort(t *testing.T) {
+	var confContent = `
+output.dbrainhub:
+  hosts: ["127.0.0.1:10010","$output_hosts"]
+  batch_size: 20480
+  retry_limit: 5
+  timeout: 2
+  db_ip: "$localip"
+  db_port: 3306`
+	conf, err := model.NewFileBeatConfFactory().NewFilebeatConf(confContent)
+	assert.Nil(t, err)
+	assert.Error(t, NewFilebeatConfGenerator("", 0, nil).CanGenerate(conf))
 }
 
 func TestConfGenImpl_CanGenerateFilebeatConf_True(t *testing.T) {
@@ -25,10 +55,12 @@ output.dbrainhub:
   hosts: ["127.0.0.1:10010","$output_hosts"]
   batch_size: 20480
   retry_limit: 5
-  timeout: 2`
+  timeout: 2
+  db_ip: "$localip"
+  db_port: $port`
 	conf, err := model.NewFileBeatConfFactory().NewFilebeatConf(confContent)
 	assert.Nil(t, err)
-	assert.Nil(t, NewFilebeatConfGenerator(nil).CanGenerate(conf))
+	assert.Nil(t, NewFilebeatConfGenerator("", 0, nil).CanGenerate(conf))
 }
 
 func TestConfGenImpl_CanGenerateModuleConf_Error(t *testing.T) {
@@ -74,12 +106,16 @@ output.dbrainhub:
   hosts: ["127.0.0.1:10010","$output_hosts"]
   batch_size: 20480
   retry_limit: 5
-  timeout: 2`
-	gen := NewFilebeatConfGenerator([]string{"123", "456"})
+  timeout: 2
+  db_ip: "$localip"
+  db_port: $port`
+	gen := NewFilebeatConfGenerator("192.168.3.4", 3306, []string{"123", "456"})
 	assert.Equal(t, gen.Generate(confContent), `
 output.dbrainhub:
   hosts: ["127.0.0.1:10010","123","456"]
   batch_size: 20480
   retry_limit: 5
-  timeout: 2`)
+  timeout: 2
+  db_ip: "192.168.3.4"
+  db_port: 3306`)
 }

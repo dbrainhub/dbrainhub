@@ -9,7 +9,7 @@ import (
 	"github.com/BurntSushi/toml"
 )
 
-type GlobalConfig struct {
+type ServerConfig struct {
 	Address string `toml:"address"`
 	DB      struct {
 		Dialect  string `toml:"dialect"`
@@ -30,31 +30,28 @@ type GlobalConfig struct {
 	} `toml:"output_server"`
 }
 
-var globalConfig *GlobalConfig
+var globalServerConfig ServerConfig
 
-func GetGlobalConfig() *GlobalConfig {
-	return globalConfig
+func GetGlobalServerConfig() *ServerConfig {
+	return &globalServerConfig
 }
 
-func InitConfigOrPanic(path string) {
+func InitConfigOrPanic(path string, conf interface{}) {
 	configPath := getConfigPath(path)
-	config, err := loadConfigFromFile(configPath)
+	err := loadConfigFromFile(configPath, conf)
 	if err != nil {
 		panic(fmt.Sprintf("InitConfig error, err: %v", err))
 	}
-	globalConfig = config
 }
 
-func loadConfigFromFile(path string) (*GlobalConfig, error) {
+func loadConfigFromFile(path string, conf interface{}) error {
 	log.Printf("loadConfigFromFile: path=%s", path)
 	bytes, err := ioutil.ReadFile(path)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	var config GlobalConfig
-	err = toml.Unmarshal(bytes, &config)
-	return &config, err
+	return toml.Unmarshal(bytes, conf)
 }
 
 // 按 用户指定 -> 环境变量 -> 默认值 的方式获取配置文件路径。

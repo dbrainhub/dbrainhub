@@ -20,9 +20,9 @@ func main() {
 		os.Exit(1)
 	}
 
-	configs.InitConfigOrPanic(*configFilePath)
+	configs.InitConfigOrPanic(*configFilePath, configs.GetGlobalServerConfig())
 
-	config := configs.GetGlobalConfig()
+	config := configs.GetGlobalServerConfig()
 	logger.InitLog(config.LogInfo.LogDir, config.LogInfo.Name, config.LogInfo.Level)
 
 	logger.Infof("Start server at: %s", config.Address)

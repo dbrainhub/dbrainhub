@@ -23,8 +23,10 @@ type (
 	}
 )
 
-func NewFilebeatConfGenerator(outputHosts []string) FilebeatConfGenerator {
+func NewFilebeatConfGenerator(localip string, port int, outputHosts []string) FilebeatConfGenerator {
 	return &filebeatConfGenImpl{
+		localip:     localip,
+		port:        port,
 		outputHosts: outputHosts,
 	}
 }
@@ -38,31 +40,59 @@ func NewModuleConfGenerator(inputPath string) ModuleConfGenerator {
 const (
 	PlaceHolderForInputPath   = "$input_path"
 	PlaceHolderForOutputHosts = "$output_hosts"
+	PlaceHolderForLocalIP     = "$localip"
+	PlaceHolderForPort        = "$port"
 )
 
 type filebeatConfGenImpl struct {
+	localip     string
+	port        int
 	outputHosts []string
 }
 
 // check output
 func (c *filebeatConfGenImpl) CanGenerate(conf *model.FilebeatConf) error {
+	if !c.hasHostPlaceholder(conf) {
+		logger.Error("yml cannot configure output.dbrainhub.hosts, there is no '%s' placeholder", PlaceHolderForOutputHosts)
+		return errors.FileBeatConfError("cannot configure output hosts")
+	}
+
+	if conf.RainhubOutput.DBIP != PlaceHolderForLocalIP {
+		logger.Error("yml cannot configure output.dbrainhub.db_ip, there is no '%s' placeholder", PlaceHolderForLocalIP)
+		return errors.FileBeatConfError("cannot configure output localip")
+	}
+
+	if conf.RainhubOutput.DBPort != PlaceHolderForPort {
+		logger.Error("yml cannot configure output.dbrainhub.db_port, there is no '%s' placeholder", PlaceHolderForPort)
+		return errors.FileBeatConfError("cannot configure output port")
+	}
+	return nil
+}
+
+func (c *filebeatConfGenImpl) hasHostPlaceholder(conf *model.FilebeatConf) bool {
 	for _, host := range conf.RainhubOutput.Hosts {
 		if strings.TrimSpace(host) == PlaceHolderForOutputHosts {
-			return nil
+			return true
 		}
 	}
-	logger.Infof("yml cannot configure output hosts, there is no '%s' placeholder", PlaceHolderForOutputHosts)
-	return errors.FileBeatConfError("cannot configure output hosts")
+	return false
 }
 
 func (c *filebeatConfGenImpl) Generate(template string) string {
+	// for hosts
 	var hosts string
 	for _, host := range c.outputHosts {
 		hosts += fmt.Sprintf(`,"%s"`, host)
 	}
 	hosts = strings.TrimPrefix(hosts, ",")
+	template = strings.ReplaceAll(template, fmt.Sprintf(`"%s"`, PlaceHolderForOutputHosts), hosts)
 
-	return strings.ReplaceAll(template, fmt.Sprintf(`"%s"`, PlaceHolderForOutputHosts), hosts)
+	// for localip
+	template = strings.ReplaceAll(template, PlaceHolderForLocalIP, c.localip)
+
+	// for port
+	template = strings.ReplaceAll(template, PlaceHolderForPort, fmt.Sprintf("%d", c.port))
+	return template
 }
 
 type moduleConfGenImpl struct {
