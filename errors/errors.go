@@ -59,10 +59,6 @@ func DbClusterNotFoundByName(name string) *ErrInfo {
 	return DbClusterNotFound(msg)
 }
 
-func DbMemberNotClassified(msg string) *ErrInfo {
-	return newErrInfo(2002, "DbMemberNotClassified", msg)
-}
-
 // 3000-3999 配置相关错误
 func AgentConfigError(format string, a ...interface{}) *ErrInfo {
 	return newErrInfo(3000, "AgentConfError", fmt.Sprintf(format, a...))
