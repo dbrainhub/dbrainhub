@@ -5,12 +5,16 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"strings"
 	"sync"
 
 	"github.com/dbrainhub/dbrainhub/configs"
 	"github.com/dbrainhub/dbrainhub/errors"
 	"github.com/dbrainhub/dbrainhub/model"
 	"github.com/dbrainhub/dbrainhub/utils/rate_limit"
+	"github.com/elastic/beats/v7/libbeat/beat"
+	"github.com/elastic/beats/v7/libbeat/beat/events"
+	"github.com/elastic/beats/v7/libbeat/common"
 	"github.com/elastic/beats/v7/libbeat/publisher"
 	esClient "github.com/elastic/go-elasticsearch/v8"
 	"github.com/gin-gonic/gin"
@@ -60,15 +64,21 @@ func DbRainhubOutput(c *gin.Context, req DbRainhubRequest) (*DbRainhubResponse, 
 
 	var failedEvents []int32
 	var buf bytes.Buffer
+
 	for i, eve := range events {
-		eb, err := json.Marshal(eve)
+		eb, err := json.Marshal(eve.Content.Fields)
 		if err != nil {
 			failedEvents = append(failedEvents, int32(i))
 			continue
 		}
 
 		indexName := genIndex()
-		meta := []byte(fmt.Sprintf(`{ "index" : { "_index":"%s" } }%s`, indexName, "\n"))
+		pipeline, err := getPipeline(&eve.Content)
+		if err != nil {
+			failedEvents = append(failedEvents, int32(i))
+			continue
+		}
+		meta := []byte(fmt.Sprintf(`{ "create" : { "_index":"%s", "pipeline":"%s" } }%s`, indexName, pipeline, "\n"))
 		buf.Grow(len(meta) + len(eb) + 1)
 		buf.Write(meta)
 		buf.Write(eb)
@@ -101,4 +111,18 @@ type DbRainhubResponse struct {
 // TODO: index name
 func genIndex() string {
 	return "test-bulk"
+}
+
+func getPipeline(event *beat.Event) (string, error) {
+	if event.Meta != nil {
+		pipeline, err := events.GetMetaStringValue(*event, events.FieldMetaPipeline)
+		if err == common.ErrKeyNotFound {
+			return "", nil
+		}
+		if err != nil {
+			return "", err
+		}
+		return strings.ToLower(pipeline), nil
+	}
+	return "", nil
 }

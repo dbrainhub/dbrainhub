@@ -1,4 +1,4 @@
 *.swp
 .idea
 .DS_Store
-cmd/dbrainhub.log
+cmd/server/dbrainhub.log
