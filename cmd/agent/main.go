@@ -10,6 +10,7 @@ import (
 	"github.com/dbrainhub/dbrainhub/configs"
 	"github.com/dbrainhub/dbrainhub/dbs"
 	"github.com/dbrainhub/dbrainhub/dbs/mysql"
+	"github.com/dbrainhub/dbrainhub/errors"
 	"github.com/dbrainhub/dbrainhub/filebeat"
 	"github.com/dbrainhub/dbrainhub/utils/logger"
 )
@@ -29,12 +30,11 @@ func main() {
 	logger.InitLog(config.LogInfo.LogDir, config.LogInfo.Name, config.LogInfo.Level)
 
 	ctx := context.Background()
-	dbOperationFactory := mysql.NewMysqlOperationFactory(&dbs.DBInfo{
-		IP:     "127.0.0.1",
-		Port:   config.DB.Port,
-		User:   config.DB.User,
-		Passwd: config.DB.Passwd,
-	})
+	dbOperationFactory, err := newDBOperationFactory(config)
+	if err != nil {
+		logger.Errorf("new db handler error(%v), exit...", err)
+		return
+	}
 	reporter, err := agent.NewStartupReporter(config, dbOperationFactory)
 	if err != nil {
 		logger.Errorf("new server reporter error, exit...")
@@ -57,4 +57,17 @@ func main() {
 
 	heartbeatService := agent.NewHeartbeatService(config)
 	heartbeatService.Run(ctx)
+}
+
+func newDBOperationFactory(config *configs.AgentConfig) (dbs.DBOperationFactory, error) {
+	switch config.DB.DBType {
+	case mysql.MysqlType:
+		return mysql.NewMysqlOperationFactory(&dbs.DBInfo{
+			IP:     "127.0.0.1",
+			Port:   config.DB.Port,
+			User:   config.DB.User,
+			Passwd: config.DB.Passwd,
+		}), nil
+	}
+	return nil, errors.AgentConfigError("unsupported dbtype: %s", config.DB.DBType)
 }
