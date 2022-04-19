@@ -1,35 +1,18 @@
-package model
+package mysql
 
 import (
 	"context"
 	"database/sql"
 
-	_ "github.com/go-sql-driver/mysql"
+	"github.com/dbrainhub/dbrainhub/dbs"
 )
-
-type (
-	SlowLogInfoQuerier interface {
-		Query(ctx context.Context) (*SlowLogInfo, error)
-	}
-
-	SlowLogInfo struct {
-		IsOpen bool
-		Path   string
-	}
-)
-
-func NewSlowLogInfoQuerier(db *sql.DB) SlowLogInfoQuerier {
-	return &mysqlSlowLogInfoQuerier{
-		db: db,
-	}
-}
 
 type mysqlSlowLogInfoQuerier struct {
 	db *sql.DB
 }
 
-func (m *mysqlSlowLogInfoQuerier) Query(ctx context.Context) (*SlowLogInfo, error) {
-	var res SlowLogInfo
+func (m *mysqlSlowLogInfoQuerier) Query(ctx context.Context) (*dbs.SlowLogInfo, error) {
+	var res dbs.SlowLogInfo
 	var err error
 	res.IsOpen, err = m.querySlowLogIsOpen(ctx)
 	if err != nil {

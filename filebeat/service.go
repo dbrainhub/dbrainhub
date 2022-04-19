@@ -2,11 +2,11 @@ package filebeat
 
 import (
 	"context"
-	"database/sql"
 	"fmt"
 	"time"
 
 	"github.com/dbrainhub/dbrainhub/configs"
+	"github.com/dbrainhub/dbrainhub/dbs"
 	"github.com/dbrainhub/dbrainhub/errors"
 	"github.com/dbrainhub/dbrainhub/model"
 	"github.com/dbrainhub/dbrainhub/utils"
@@ -14,8 +14,7 @@ import (
 )
 
 const (
-	DBTypeMysql = "mysql"
-	LocalHost   = "127.0.0.1"
+	LocalHost = "127.0.0.1"
 )
 
 type (
@@ -24,22 +23,23 @@ type (
 	}
 )
 
-func NewFilebeatService(agentConf *configs.AgentConfig) (FilebeatService, error) {
+func NewFilebeatService(agentConf *configs.AgentConfig, df dbs.DBOperationFactory) (FilebeatService, error) {
 	localip, err := utils.GetLocalIP()
 	if err != nil {
 		logger.Errorf("get local ip error, err: %v", err)
 		return nil, err
 	}
+	slowLogQuerier, err := df.CreateSlowlogQuerier()
+	if err != nil {
+		logger.Errorf("createSlowLogQuerier error, err: %v", err)
+		return nil, err
+	}
 	return &filebeatService{
-		dbInfo: &DBInfo{
-			IP:     LocalHost,
-			Port:   agentConf.DB.Port,
-			User:   agentConf.DB.User,
-			Passwd: agentConf.DB.Passwd,
-		},
-		localip:     localip,
-		dbtype:      agentConf.DB.DBType,
-		serverAddrs: []string{agentConf.Server.Addr},
+		dbPort:         agentConf.DB.Port,
+		localip:        localip,
+		dbtype:         agentConf.DB.DBType,
+		serverAddrs:    []string{agentConf.Server.Addr},
+		slowlogQuerier: slowLogQuerier,
 
 		filebeatConfTemplateFile: agentConf.Filebeat.FilebeatConfTemplate,
 		moduleConfTemplateFile:   agentConf.Filebeat.ModuleConfTemplate,
@@ -61,7 +61,7 @@ type filebeatService struct {
 	filebeatConf *model.FilebeatConf
 
 	localip string
-	dbInfo  *DBInfo
+	dbPort  int
 	dbtype  string
 
 	// conf template
@@ -88,6 +88,8 @@ type filebeatService struct {
 
 	// for slowlog listener
 	slowlogListenerInterval time.Duration
+
+	slowlogQuerier dbs.SlowLogInfoQuerier
 }
 
 // There are serveral steps below:
@@ -153,12 +155,6 @@ func (f *filebeatService) startFilebeat(ctx context.Context, slowLogUpdateFinish
 }
 
 func (f *filebeatService) startSlowlogListener(ctx context.Context) (<-chan bool, error) {
-	db, err := f.dbInfo.GetDB(f.dbtype)
-	if err != nil {
-		return nil, err
-	}
-	slowLogQuery := model.NewSlowLogInfoQuerier(db)
-
 	errCallback := func(ctx context.Context, err error) {
 		logger.Errorf("slowlog listener err: %v", err)
 		// TODO: callback the server
@@ -175,7 +171,7 @@ func (f *filebeatService) startSlowlogListener(ctx context.Context) (<-chan bool
 		default:
 		}
 	}
-	NewSlowLogPathListener(slowLogQuery, f.slowlogListenerInterval, &SlowLogPathCallback{
+	NewSlowLogPathListener(f.slowlogQuerier, f.slowlogListenerInterval, &SlowLogPathCallback{
 		ChangedCallback: changedCallback,
 		ErrorCallback:   errCallback,
 	}).Listen(ctx)
@@ -196,7 +192,7 @@ func (f *filebeatService) generateFilebeatConf() error {
 		return err
 	}
 
-	filebeatConfStr := NewFilebeatConfGenerator(f.localip, f.dbInfo.Port, f.serverAddrs).Generate(filebeatConfTemplate)
+	filebeatConfStr := NewFilebeatConfGenerator(f.localip, f.dbPort, f.serverAddrs).Generate(filebeatConfTemplate)
 	if err := utils.OverwriteToFile(f.confFilePath, filebeatConfStr); err != nil {
 		logger.Errorf("write to filebeat conf file error, file: %s, err: %v", f.confFilePath, err)
 		return err
@@ -228,20 +224,4 @@ func (f *filebeatService) generateModuleConf(inputPaths string) error {
 
 func (f *filebeatService) getModuleFilePath() string {
 	return fmt.Sprintf("%s/%s.yml", f.moduleConfDir, f.dbtype)
-}
-
-type DBInfo struct {
-	IP     string
-	Port   int
-	User   string
-	Passwd string
-}
-
-func (d *DBInfo) GetDB(dbtype string) (*sql.DB, error) {
-	switch dbtype {
-	case DBTypeMysql:
-		return sql.Open(dbtype,
-			fmt.Sprintf("%s:%s@tcp(%s:%d)/", d.User, d.Passwd, d.IP, d.Port))
-	}
-	return nil, errors.AgentConfigError("invalid dbtype: %s", dbtype)
 }

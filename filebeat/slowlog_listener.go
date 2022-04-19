@@ -4,7 +4,7 @@ import (
 	"context"
 	"time"
 
-	"github.com/dbrainhub/dbrainhub/model"
+	"github.com/dbrainhub/dbrainhub/dbs"
 	"github.com/dbrainhub/dbrainhub/utils/logger"
 )
 
@@ -21,7 +21,7 @@ type (
 	}
 )
 
-func NewSlowLogPathListener(slowLogQuerier model.SlowLogInfoQuerier, interval time.Duration, callbacks *SlowLogPathCallback) SlowLogPathListener {
+func NewSlowLogPathListener(slowLogQuerier dbs.SlowLogInfoQuerier, interval time.Duration, callbacks *SlowLogPathCallback) SlowLogPathListener {
 	return &slowLogPathListener{
 		slowLogQuerier: slowLogQuerier,
 		interval:       interval,
@@ -30,7 +30,7 @@ func NewSlowLogPathListener(slowLogQuerier model.SlowLogInfoQuerier, interval ti
 }
 
 type slowLogPathListener struct {
-	slowLogQuerier model.SlowLogInfoQuerier
+	slowLogQuerier dbs.SlowLogInfoQuerier
 	interval       time.Duration
 	callbacks      *SlowLogPathCallback
 }
