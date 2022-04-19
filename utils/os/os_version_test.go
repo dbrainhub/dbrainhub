@@ -1,21 +1,20 @@
 package osutils
 
 import (
+	"runtime"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 )
 
 func TestGetOsVersion(t *testing.T) {
-	var drawin darwinVersionQuerier
-	version, err := drawin.GetOsVersion()
+	querier := NewVersionQuerier(runtime.GOOS)
+	_, err := querier.GetOsVersion()
 	assert.Nil(t, err)
-	assert.Equal(t, version, "10.15.7")
 }
 
 func TestGetKernalVersion(t *testing.T) {
-	var drawin darwinVersionQuerier
-	version, err := drawin.GetKernelVersion()
+	querier := NewVersionQuerier(runtime.GOOS)
+	_, err := querier.GetKernelVersion()
 	assert.Nil(t, err)
-	assert.Equal(t, version, "19.6.0")
 }
