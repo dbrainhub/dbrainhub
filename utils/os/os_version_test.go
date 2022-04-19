@@ -15,7 +15,7 @@ func TestGetOsVersion(t *testing.T) {
 
 func TestGetKernalVersion(t *testing.T) {
 	var drawin darwinVersionQuerier
-	version, err := drawin.GetKernalVersion()
+	version, err := drawin.GetKernelVersion()
 	assert.Nil(t, err)
 	assert.Equal(t, version, "19.6.0")
 }

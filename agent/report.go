@@ -82,9 +82,9 @@ func (s *startupReportImpl) Report(ctx context.Context) error {
 		logger.Errorf("get os_version error, err: %v", err)
 	}
 
-	kernalVersion, err := versionQuerier.GetKernalVersion()
+	kernelVersion, err := versionQuerier.GetKernelVersion()
 	if err != nil { // don't return
-		logger.Errorf("get kernal_version error, err: %v", err)
+		logger.Errorf("get kernel_version error, err: %v", err)
 	}
 
 	req := &api.StartupReportRequest{
@@ -96,7 +96,7 @@ func (s *startupReportImpl) Report(ctx context.Context) error {
 		Os:            runtime.GOOS,
 		OsVersion:     osVersion,
 		DbVersion:     dbVersion.Version,
-		KernalVersion: kernalVersion,
+		KernelVersion: kernelVersion,
 	}
 	reqBytes, err := json.Marshal(req)
 	if err != nil {

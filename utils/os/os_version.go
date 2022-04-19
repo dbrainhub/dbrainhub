@@ -11,7 +11,7 @@ type VersionQuerier interface {
 	// 发行版本
 	GetOsVersion() (string, error)
 	// 内核版本
-	GetKernalVersion() (string, error)
+	GetKernelVersion() (string, error)
 }
 
 func NewVersionQuerier(osType string) VersionQuerier {
@@ -27,7 +27,7 @@ func NewVersionQuerier(osType string) VersionQuerier {
 type darwinVersionQuerier struct {
 }
 
-func (d *darwinVersionQuerier) GetKernalVersion() (string, error) {
+func (d *darwinVersionQuerier) GetKernelVersion() (string, error) {
 	const cmd = "uname -r"
 	res, err := execCmd(cmd)
 	return strings.TrimSpace(res), err
@@ -56,7 +56,7 @@ func (d *darwinVersionQuerier) GetOsVersion() (string, error) {
 
 type linuxVersionQuerier struct{}
 
-func (d *linuxVersionQuerier) GetKernalVersion() (string, error) {
+func (d *linuxVersionQuerier) GetKernelVersion() (string, error) {
 	const cmd = "uname -r"
 	res, err := execCmd(cmd)
 	return strings.TrimSpace(res), err
@@ -80,7 +80,7 @@ func (d *linuxVersionQuerier) GetOsVersion() (string, error) {
 type unknownVersionQuerier struct {
 }
 
-func (u *unknownVersionQuerier) GetKernalVersion() (string, error) {
+func (u *unknownVersionQuerier) GetKernelVersion() (string, error) {
 	return "", nil
 }
 
