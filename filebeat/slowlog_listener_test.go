@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/dbrainhub/dbrainhub/model"
+	"github.com/dbrainhub/dbrainhub/dbs"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -63,8 +63,8 @@ type MockSlowLogQuerier struct {
 	isReturnErr bool
 }
 
-func (m *MockSlowLogQuerier) Query(ctx context.Context) (*model.SlowLogInfo, error) {
-	var res = &model.SlowLogInfo{
+func (m *MockSlowLogQuerier) Query(ctx context.Context) (*dbs.SlowLogInfo, error) {
+	var res = &dbs.SlowLogInfo{
 		Path:   m.slowPathArr[m.i%len(m.slowPathArr)],
 		IsOpen: true,
 	}
