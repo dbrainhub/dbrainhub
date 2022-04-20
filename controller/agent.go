@@ -64,7 +64,7 @@ func Report(c *gin.Context, req *api.StartupReportRequest) (*api.StartupReportRe
 		OsVersion: req.OsVersion,
 		HostType:  int32(req.HostType),
 	}
-	if err != nil {
+	if member == nil {
 		if _, err := model.CreateDbClusterMember(c, model.GetDB(c), insertParam); err != nil {
 			logger.Errorf("CreateDbClusterMember error when report, err: %v, req: %#v", err, req)
 			return nil, errors.AgentReportError("insert new cluster member failed")
