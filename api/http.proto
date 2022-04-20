@@ -56,6 +56,7 @@ message StartupReportRequest {
     int32 port = 7;
     string os = 8;
     string os_version = 9;
+    string kernel_version = 10;
 
 }
 

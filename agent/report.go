@@ -14,6 +14,7 @@ import (
 	"github.com/dbrainhub/dbrainhub/errors"
 	"github.com/dbrainhub/dbrainhub/utils"
 	"github.com/dbrainhub/dbrainhub/utils/logger"
+	osutils "github.com/dbrainhub/dbrainhub/utils/os"
 )
 
 const StartupReportPath = "/agent/report"
@@ -74,15 +75,28 @@ func (s *startupReportImpl) Report(ctx context.Context) error {
 	if err != nil { // don't return
 		logger.Errorf("queryDBVersion error, err: %v", err)
 	}
+
+	versionQuerier := osutils.NewVersionQuerier(runtime.GOOS)
+	osVersion, err := versionQuerier.GetOsVersion()
+	if err != nil { // don't return
+		logger.Errorf("get os_version error, err: %v", err)
+	}
+
+	kernelVersion, err := versionQuerier.GetKernelVersion()
+	if err != nil { // don't return
+		logger.Errorf("get kernel_version error, err: %v", err)
+	}
+
 	req := &api.StartupReportRequest{
-		DbType:    api.StartupReportRequest_DBType(s.dbType),
-		HostType:  api.StartupReportRequest_HostType(s.hostType),
-		Hostname:  hostname,
-		IpAddr:    localip,
-		Port:      int32(s.port),
-		Os:        runtime.GOOS,
-		OsVersion: "", // TODO: 不同系统的获取方式不同。
-		DbVersion: dbVersion.Version,
+		DbType:        api.StartupReportRequest_DBType(s.dbType),
+		HostType:      api.StartupReportRequest_HostType(s.hostType),
+		Hostname:      hostname,
+		IpAddr:        localip,
+		Port:          int32(s.port),
+		Os:            runtime.GOOS,
+		OsVersion:     osVersion,
+		DbVersion:     dbVersion.Version,
+		KernelVersion: kernelVersion,
 	}
 	reqBytes, err := json.Marshal(req)
 	if err != nil {
