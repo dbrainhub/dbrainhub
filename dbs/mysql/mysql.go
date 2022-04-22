@@ -1,6 +1,9 @@
 package mysql
 
-import "github.com/dbrainhub/dbrainhub/dbs"
+import (
+	"github.com/dbrainhub/dbrainhub/dbs"
+	_ "github.com/go-sql-driver/mysql"
+)
 
 const (
 	MysqlType = "mysql"
@@ -16,12 +19,12 @@ type mysqlOperationFactory struct {
 	dbInfo *dbs.DBInfo
 }
 
-func (m *mysqlOperationFactory) CreateSlowlogQuerier() (dbs.SlowLogInfoQuerier, error) {
+func (m *mysqlOperationFactory) CreateVariablesCenter() (dbs.VariablesCenter, error) {
 	db, err := m.dbInfo.GetSQLDB(MysqlType)
 	if err != nil {
 		return nil, err
 	}
-	return &mysqlSlowLogInfoQuerier{
+	return &mysqlVariablesQuerier{
 		db: db,
 	}, nil
 }
@@ -32,6 +35,16 @@ func (m *mysqlOperationFactory) CreateVersionQuerier() (dbs.DBVersionQuerier, er
 		return nil, err
 	}
 	return &mysqlDBVersion{
+		db: db,
+	}, nil
+}
+
+func (m *mysqlOperationFactory) CreateStatusQuerier() (dbs.StatusQuerier, error) {
+	db, err := m.dbInfo.GetSQLDB(MysqlType)
+	if err != nil {
+		return nil, err
+	}
+	return &mysqlStatusQuerier{
 		db: db,
 	}, nil
 }

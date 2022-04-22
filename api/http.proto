@@ -16,16 +16,21 @@ message HelloWorldResponse {
 
 // heartbeat protocol
 message HeartbeatRequest {
-    message AgentInfo {
+    message Agent {
         string localip = 1;
+        double cpu_rate = 2;
+        double disk_rate = 3;
+        double mem_rate = 4;
     }
-    AgentInfo agent_info = 1;
+    Agent agent_info = 1;
 
-    message DBInfo {
+    message DB {
         string dbtype = 1;
         int32 port = 2;
+        double qps = 3;
+        double tps = 4;
     }
-    DBInfo dbInfo = 2;
+    DB dbInfo = 2;
 }
 
 message HeartbeatResponse {
@@ -57,6 +62,7 @@ message StartupReportRequest {
     string os = 8;
     string os_version = 9;
     string kernel_version = 10;
+    string env = 11;
 
 }
 

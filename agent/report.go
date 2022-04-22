@@ -44,6 +44,7 @@ func NewStartupReporter(agentConf *configs.AgentConfig, df dbs.DBOperationFactor
 	return &startupReportImpl{
 		hostType:         agentConf.ConvertHostType(),
 		dbType:           dbtype,
+		env:              agentConf.DB.Env,
 		port:             agentConf.DB.Port,
 		serverAddr:       agentConf.Server.Addr,
 		client:           httpClient,
@@ -55,6 +56,7 @@ type startupReportImpl struct {
 	dbType   api.StartupReportRequest_DBType
 	hostType api.StartupReportRequest_HostType
 	port     int
+	env      string
 
 	serverAddr       string
 	dbVersionQuerier dbs.DBVersionQuerier
@@ -97,6 +99,7 @@ func (s *startupReportImpl) Report(ctx context.Context) error {
 		OsVersion:     osVersion,
 		DbVersion:     dbVersion.Version,
 		KernelVersion: kernelVersion,
+		Env:           s.env,
 	}
 	reqBytes, err := json.Marshal(req)
 	if err != nil {
