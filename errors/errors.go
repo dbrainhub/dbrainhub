@@ -59,14 +59,31 @@ func DbClusterNotFoundByName(name string) *ErrInfo {
 	return DbClusterNotFound(msg)
 }
 
-// 3000-3999 配置相关错误
+// 3000-3999 agent 相关错误
 func AgentConfigError(format string, a ...interface{}) *ErrInfo {
 	return newErrInfo(3000, "AgentConfError", fmt.Sprintf(format, a...))
 }
 
+func AgentReportError(format string, a ...interface{}) *ErrInfo {
+	return newErrInfo(3001, "AgentReportError", fmt.Sprintf(format, a...))
+}
+
+func AgentHeartbeatError(format string, a ...interface{}) *ErrInfo {
+	return newErrInfo(3002, "AgentHeartbeatError", fmt.Sprintf(format, a...))
+}
+
 // 4000-4999 dbcluster member 相关
+const DBClusterMemberNotFoundErrorCode = 4000
+
+func IsDBClusterMemberNotFound(err error) bool {
+	errInfo, ok := err.(*ErrInfo)
+	if !ok {
+		return false
+	}
+	return errInfo.Code == DBClusterMemberNotFoundErrorCode
+}
 func DbClusterMemberNotFound(msg string) *ErrInfo {
-	return newErrInfo(4000, "DbClusterMemberNotFound", msg)
+	return newErrInfo(DBClusterMemberNotFoundErrorCode, "DbClusterMemberNotFound", msg)
 }
 func DbClusterMemberNotFoundById(id int32) *ErrInfo {
 	msg := fmt.Sprintf("dbcluster_member with id=%d not found", id)
