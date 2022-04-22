@@ -39,12 +39,12 @@ func (m *mysqlOperationFactory) CreateVersionQuerier() (dbs.DBVersionQuerier, er
 	}, nil
 }
 
-func (m *mysqlOperationFactory) CreateStatusQuerier() (dbs.StatusQuerier, error) {
+func (m *mysqlOperationFactory) CreateStatusCenter() (dbs.StatusCenter, error) {
 	db, err := m.dbInfo.GetSQLDB(MysqlType)
 	if err != nil {
 		return nil, err
 	}
-	return &mysqlStatusQuerier{
+	return &mysqlStatusCenter{
 		db: db,
 	}, nil
 }

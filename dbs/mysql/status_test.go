@@ -19,13 +19,13 @@ func newDBInfo() *dbs.DBInfo {
 
 func TestGetTransactions(t *testing.T) {
 	factory := NewMysqlOperationFactory(newDBInfo())
-	querier, err := factory.CreateStatusQuerier()
+	querier, err := factory.CreateStatusCenter()
 	assert.Nil(t, err)
-	cnt, err := querier.QueryTransactionCount(context.Background())
+	cnt, err := querier.TransactionCount(context.Background())
 	assert.Nil(t, err)
 	assert.NotEqual(t, cnt, 0)
 
-	cnt, err = querier.QueryStatementCount(context.Background())
+	cnt, err = querier.StatementCount(context.Background())
 	assert.Nil(t, err)
 	assert.NotEqual(t, cnt, 0)
 }

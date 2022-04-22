@@ -6,15 +6,15 @@ import (
 	"fmt"
 )
 
-type mysqlStatusQuerier struct {
+type mysqlStatusCenter struct {
 	db *sql.DB
 }
 
-func (m *mysqlStatusQuerier) QueryStatementCount(ctx context.Context) (int64, error) {
+func (m *mysqlStatusCenter) StatementCount(ctx context.Context) (int64, error) {
 	return m.queryQuertions(ctx)
 }
 
-func (m *mysqlStatusQuerier) QueryTransactionCount(ctx context.Context) (int64, error) {
+func (m *mysqlStatusCenter) TransactionCount(ctx context.Context) (int64, error) {
 	var res int64
 	selectCount, err := m.queryComSelect(ctx)
 	if err != nil {
@@ -74,7 +74,7 @@ func (m *mysqlStatusQuerier) QueryTransactionCount(ctx context.Context) (int64, 
 }
 
 // The difference between `Questions` and `Queries` can  refer to https://dev.mysql.com/doc/refman/8.0/en/server-status-variables.html
-func (m *mysqlStatusQuerier) queryQuertions(ctx context.Context) (int64, error) {
+func (m *mysqlStatusCenter) queryQuertions(ctx context.Context) (int64, error) {
 	const variableName = "Questions"
 	var res int64
 	if err := m.query(ctx, variableName, &res); err != nil {
@@ -83,7 +83,7 @@ func (m *mysqlStatusQuerier) queryQuertions(ctx context.Context) (int64, error) 
 	return res, nil
 }
 
-func (m *mysqlStatusQuerier) queryComSelect(ctx context.Context) (int64, error) {
+func (m *mysqlStatusCenter) queryComSelect(ctx context.Context) (int64, error) {
 	const variableName = "Com_select"
 	var res int64
 	if err := m.query(ctx, variableName, &res); err != nil {
@@ -92,7 +92,7 @@ func (m *mysqlStatusQuerier) queryComSelect(ctx context.Context) (int64, error) 
 	return res, nil
 }
 
-func (m *mysqlStatusQuerier) queryComInsert(ctx context.Context) (int64, error) {
+func (m *mysqlStatusCenter) queryComInsert(ctx context.Context) (int64, error) {
 	const variableName = "Com_insert"
 	var res int64
 	if err := m.query(ctx, variableName, &res); err != nil {
@@ -101,7 +101,7 @@ func (m *mysqlStatusQuerier) queryComInsert(ctx context.Context) (int64, error) 
 	return res, nil
 }
 
-func (m *mysqlStatusQuerier) queryComUpdate(ctx context.Context) (int64, error) {
+func (m *mysqlStatusCenter) queryComUpdate(ctx context.Context) (int64, error) {
 	const variableName = "Com_update"
 	var res int64
 	if err := m.query(ctx, variableName, &res); err != nil {
@@ -110,7 +110,7 @@ func (m *mysqlStatusQuerier) queryComUpdate(ctx context.Context) (int64, error) 
 	return res, nil
 }
 
-func (m *mysqlStatusQuerier) queryComDelete(ctx context.Context) (int64, error) {
+func (m *mysqlStatusCenter) queryComDelete(ctx context.Context) (int64, error) {
 	const variableName = "Com_delete"
 	var res int64
 	if err := m.query(ctx, variableName, &res); err != nil {
@@ -119,7 +119,7 @@ func (m *mysqlStatusQuerier) queryComDelete(ctx context.Context) (int64, error) 
 	return res, nil
 }
 
-func (m *mysqlStatusQuerier) queryComInsertSelect(ctx context.Context) (int64, error) {
+func (m *mysqlStatusCenter) queryComInsertSelect(ctx context.Context) (int64, error) {
 	const variableName = "Com_insert_select"
 	var res int64
 	if err := m.query(ctx, variableName, &res); err != nil {
@@ -129,7 +129,7 @@ func (m *mysqlStatusQuerier) queryComInsertSelect(ctx context.Context) (int64, e
 }
 
 // update multi tables
-func (m *mysqlStatusQuerier) queryComUpdateMulti(ctx context.Context) (int64, error) {
+func (m *mysqlStatusCenter) queryComUpdateMulti(ctx context.Context) (int64, error) {
 	const variableName = "Com_update_multi"
 	var res int64
 	if err := m.query(ctx, variableName, &res); err != nil {
@@ -138,7 +138,7 @@ func (m *mysqlStatusQuerier) queryComUpdateMulti(ctx context.Context) (int64, er
 	return res, nil
 }
 
-func (m *mysqlStatusQuerier) queryComDeleteMulti(ctx context.Context) (int64, error) {
+func (m *mysqlStatusCenter) queryComDeleteMulti(ctx context.Context) (int64, error) {
 	const variableName = "Com_delete_multi"
 	var res int64
 	if err := m.query(ctx, variableName, &res); err != nil {
@@ -148,7 +148,7 @@ func (m *mysqlStatusQuerier) queryComDeleteMulti(ctx context.Context) (int64, er
 }
 
 // note: there is a update statement in a transaction: Com_commit++, Com_update not changed
-func (m *mysqlStatusQuerier) queryComCommit(ctx context.Context) (int64, error) {
+func (m *mysqlStatusCenter) queryComCommit(ctx context.Context) (int64, error) {
 	const variableName = "Com_commit"
 	var res int64
 	if err := m.query(ctx, variableName, &res); err != nil {
@@ -157,7 +157,7 @@ func (m *mysqlStatusQuerier) queryComCommit(ctx context.Context) (int64, error) 
 	return res, nil
 }
 
-func (m *mysqlStatusQuerier) queryComRollback(ctx context.Context) (int64, error) {
+func (m *mysqlStatusCenter) queryComRollback(ctx context.Context) (int64, error) {
 	const variableName = "Com_rollback"
 	var res int64
 	if err := m.query(ctx, variableName, &res); err != nil {
@@ -166,7 +166,7 @@ func (m *mysqlStatusQuerier) queryComRollback(ctx context.Context) (int64, error
 	return res, nil
 }
 
-func (m *mysqlStatusQuerier) query(ctx context.Context, name string, value interface{}) error {
+func (m *mysqlStatusCenter) query(ctx context.Context, name string, value interface{}) error {
 	rows, err := m.db.Query(fmt.Sprintf(`show global status like '%s'`, name))
 	if err != nil {
 		return err

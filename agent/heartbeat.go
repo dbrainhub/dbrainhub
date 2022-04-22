@@ -148,7 +148,7 @@ func (h *heartbeatImpl) diskUsage(ctx context.Context) (float64, error) {
 }
 
 func createDBIndexManager(ctx context.Context, dbfactory dbs.DBOperationFactory) (dbs.DBIndexManager, error) {
-	statusQuerier, err := dbfactory.CreateStatusQuerier()
+	statusQuerier, err := dbfactory.CreateStatusCenter()
 	if err != nil {
 		return nil, err
 	}

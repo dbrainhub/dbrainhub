@@ -14,11 +14,11 @@ type MockStatusQuerier struct {
 	Count   int64
 }
 
-func (m *MockStatusQuerier) QueryStatementCount(ctx context.Context) (int64, error) {
+func (m *MockStatusQuerier) StatementCount(ctx context.Context) (int64, error) {
 	m.Count++
 	return m.InitVal + m.Count*m.Delta, nil
 }
-func (m *MockStatusQuerier) QueryTransactionCount(ctx context.Context) (int64, error) {
+func (m *MockStatusQuerier) TransactionCount(ctx context.Context) (int64, error) {
 	m.Count++
 	return m.InitVal + m.Count*m.Delta, nil
 }

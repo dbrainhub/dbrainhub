@@ -17,13 +17,13 @@ type (
 		GetTPS(ctx context.Context) (float64, error)
 	}
 
-	StatusQuerier interface {
-		QueryStatementCount(ctx context.Context) (int64, error)
-		QueryTransactionCount(ctx context.Context) (int64, error)
+	StatusCenter interface {
+		StatementCount(ctx context.Context) (int64, error)
+		TransactionCount(ctx context.Context) (int64, error)
 	}
 )
 
-func NewDBIndexManager(ctx context.Context, statusQuerier StatusQuerier) (DBIndexManager, error) {
+func NewDBIndexManager(ctx context.Context, statusQuerier StatusCenter) (DBIndexManager, error) {
 	res := &defaultIndexManager{
 		statusQuerier: statusQuerier,
 	}
@@ -33,7 +33,7 @@ func NewDBIndexManager(ctx context.Context, statusQuerier StatusQuerier) (DBInde
 }
 
 type defaultIndexManager struct {
-	statusQuerier StatusQuerier
+	statusQuerier StatusCenter
 
 	lastStatementCount int64
 	lastStatementNs    int64
@@ -44,7 +44,7 @@ type defaultIndexManager struct {
 
 // Note: The interval that call `NewDBIndexManager` and `GetQPS` is too short may cause return error
 func (d *defaultIndexManager) GetQPS(ctx context.Context) (float64, error) {
-	count, err := d.statusQuerier.QueryStatementCount(ctx)
+	count, err := d.statusQuerier.StatementCount(ctx)
 	if err != nil {
 		return InvalidQPS, err
 	}
@@ -67,7 +67,7 @@ func (d *defaultIndexManager) GetQPS(ctx context.Context) (float64, error) {
 
 // Note: The interval that call `NewDBIndexManager` and `GetTPS` is too short may cause return error
 func (d *defaultIndexManager) GetTPS(ctx context.Context) (float64, error) {
-	count, err := d.statusQuerier.QueryTransactionCount(ctx)
+	count, err := d.statusQuerier.TransactionCount(ctx)
 	if err != nil {
 		return InvalidTPS, err
 	}
