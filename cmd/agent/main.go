@@ -55,7 +55,11 @@ func main() {
 		return
 	}
 
-	heartbeatService := agent.NewHeartbeatService(config)
+	heartbeatService, err := agent.NewHeartbeatService(ctx, config, dbOperationFactory)
+	if err != nil {
+		logger.Errorf("create HeartbeatService failed, exit...")
+		return
+	}
 	heartbeatService.Run(ctx)
 }
 

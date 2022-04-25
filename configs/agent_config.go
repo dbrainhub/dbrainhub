@@ -13,6 +13,7 @@ type AgentConfig struct {
 		Port     int    `toml:"port"`
 		User     string `toml:"user"`
 		Passwd   string `toml:"password"`
+		Env      string `toml:"env"`
 	} `toml:"db"`
 
 	Server struct {

@@ -1,6 +1,7 @@
 package dbs
 
 type DBOperationFactory interface {
-	CreateSlowlogQuerier() (SlowLogInfoQuerier, error)
+	CreateVariablesCenter() (VariablesCenter, error)
 	CreateVersionQuerier() (DBVersionQuerier, error)
+	CreateStatusCenter() (StatusCenter, error)
 }

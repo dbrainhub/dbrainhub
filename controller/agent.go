@@ -9,7 +9,7 @@ import (
 )
 
 func Heartbeat(c *gin.Context, req *api.HeartbeatRequest) (*api.HeartbeatResponse, error) {
-	logger.Infof("receive heartbeat from IP:%s, port: %d, req: %#v\n", req.AgentInfo.Localip, req.DbInfo.Port, req)
+	logger.Infof("receive heartbeat from IP:%s, port: %d, req: %s\n", req.AgentInfo.Localip, req.DbInfo.Port, req.String())
 
 	if req.AgentInfo.Localip == "" || req.DbInfo.Port == 0 {
 		logger.Errorf("invalid agent ip.port:%s.%d", req.AgentInfo.Localip, req.DbInfo.Port)
@@ -40,7 +40,7 @@ func Heartbeat(c *gin.Context, req *api.HeartbeatRequest) (*api.HeartbeatRespons
 }
 
 func Report(c *gin.Context, req *api.StartupReportRequest) (*api.StartupReportResponse, error) {
-	logger.Infof("receive reporter from IP:%s, port: %d, req: %#v\n", req.IpAddr, req.Port, req)
+	logger.Infof("receive reporter from IP:%s, port: %d, req: %s\n", req.IpAddr, req.Port, req.String())
 
 	if req.IpAddr == "" || req.Port == 0 {
 		logger.Errorf("invalid agent ip.port:%s.%d", req.IpAddr, req.Port)
