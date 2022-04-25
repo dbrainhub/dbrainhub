@@ -65,6 +65,7 @@ type ESMeta struct {
 }
 
 type AgentIndexData struct {
+	TimeStamp string  `json:"@timestamp"`
 	IP        string  `json:"ip"`
 	Port      int     `json:"port"`
 	CPURatio  float64 `json:"cpu_ratio"`

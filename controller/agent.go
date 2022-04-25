@@ -43,6 +43,7 @@ func Heartbeat(c *gin.Context, req *api.HeartbeatRequest) (*api.HeartbeatRespons
 			Index: "test-index",
 		},
 		Data: &model.AgentIndexData{
+			TimeStamp: req.AgentInfo.Datetime,
 			IP:        req.AgentInfo.Localip,
 			Port:      int(req.DbInfo.Port),
 			CPURatio:  req.AgentInfo.CpuRatio,
