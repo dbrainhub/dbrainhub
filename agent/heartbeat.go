@@ -109,10 +109,10 @@ func (h *heartbeatImpl) heartbeat(ctx context.Context) {
 
 	req := &api.HeartbeatRequest{
 		AgentInfo: &api.HeartbeatRequest_Agent{
-			Localip:  ip,
-			CpuRate:  cpuUsage,
-			MemRate:  memUsage,
-			DiskRate: diskUsage,
+			Localip:   ip,
+			CpuRatio:  cpuUsage,
+			MemRatio:  memUsage,
+			DiskRatio: diskUsage,
 		},
 		DbInfo: &api.HeartbeatRequest_DB{
 			Dbtype: h.dbType,

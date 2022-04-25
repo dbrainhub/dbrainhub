@@ -18,9 +18,9 @@ message HelloWorldResponse {
 message HeartbeatRequest {
     message Agent {
         string localip = 1;
-        double cpu_rate = 2;
-        double disk_rate = 3;
-        double mem_rate = 4;
+        double cpu_ratio = 2;
+        double disk_ratio = 3;
+        double mem_ratio = 4;
     }
     Agent agent_info = 1;
 
