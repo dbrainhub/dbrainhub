@@ -4,9 +4,10 @@ package api;
 
 option go_package = "./api";
 
-//run `protoc  -I ./ --proto_path=../ --go_out=../ ./http.proto`
+import "google/api/annotations.proto";
 
 message HelloWorldRequest {
+   // description here
     optional string ping = 1;
 }
 
@@ -68,4 +69,13 @@ message StartupReportRequest {
 
 message StartupReportResponse {
 
+}
+
+service DBRainhubService {
+  // title here    
+  rpc Hello (HelloWorldRequest) returns (HelloWorldResponse) {
+    option (google.api.http) = {
+      post: "/v1/hello"
+    };
+  }
 }
