@@ -4,6 +4,7 @@ import (
 	"github.com/dbrainhub/dbrainhub/api"
 	"github.com/dbrainhub/dbrainhub/errors"
 	"github.com/dbrainhub/dbrainhub/model"
+	"github.com/dbrainhub/dbrainhub/server"
 	"github.com/dbrainhub/dbrainhub/utils/logger"
 	"github.com/gin-gonic/gin"
 )
@@ -36,6 +37,22 @@ func Heartbeat(c *gin.Context, req *api.HeartbeatRequest) (*api.HeartbeatRespons
 		logger.Errorf("UpdateDbClusterMember error when heartbeat, err: %v, req: %#v", err, req)
 		return nil, errors.AgentHeartbeatError("update cluster member failed")
 	}
+
+	server.GetDefaultEsClientAsync().Send(&model.ESMessage{
+		Meta: &model.ESMeta{
+			Index: "test-index",
+		},
+		Data: &model.AgentIndexData{
+			IP:        req.AgentInfo.Localip,
+			Port:      int(req.DbInfo.Port),
+			CPURatio:  req.AgentInfo.CpuRatio,
+			MemRatio:  req.AgentInfo.MemRatio,
+			DiskRatio: req.AgentInfo.DiskRatio,
+			QPS:       req.DbInfo.Qps,
+			TPS:       req.DbInfo.Tps,
+		},
+	})
+
 	return &api.HeartbeatResponse{}, nil
 }
 

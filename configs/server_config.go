@@ -10,8 +10,13 @@ import (
 )
 
 type ServerConfig struct {
-	Address string `toml:"address"`
-	DB      struct {
+	Server struct {
+		Address      string   `toml:"address"`
+		ESAddresses  []string `toml:"es_addresses"`
+		ESBatchSize  int      `toml:"es_batch_size"`
+		ESIntervalMs int      `toml:"es_interval_ms"`
+	} `toml:"server"`
+	DB struct {
 		Dialect  string `toml:"dialect"`
 		User     string `toml:"user"`
 		Password string `toml:"password"`
