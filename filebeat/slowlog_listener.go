@@ -21,7 +21,7 @@ type (
 	}
 )
 
-func NewSlowLogPathListener(slowLogQuerier dbs.SlowLogInfoQuerier, interval time.Duration, callbacks *SlowLogPathCallback) SlowLogPathListener {
+func NewSlowLogPathListener(slowLogQuerier slowlogQuerier, interval time.Duration, callbacks *SlowLogPathCallback) SlowLogPathListener {
 	return &slowLogPathListener{
 		slowLogQuerier: slowLogQuerier,
 		interval:       interval,
@@ -29,8 +29,12 @@ func NewSlowLogPathListener(slowLogQuerier dbs.SlowLogInfoQuerier, interval time
 	}
 }
 
+type slowlogQuerier interface {
+	SlowlogInfo(ctx context.Context) (*dbs.SlowLogInfo, error)
+}
+
 type slowLogPathListener struct {
-	slowLogQuerier dbs.SlowLogInfoQuerier
+	slowLogQuerier slowlogQuerier
 	interval       time.Duration
 	callbacks      *SlowLogPathCallback
 }
@@ -39,7 +43,7 @@ func (s *slowLogPathListener) Listen(ctx context.Context) {
 	go func() {
 		var slowLogPath string
 		for {
-			slowLogInfo, err := s.slowLogQuerier.Query(ctx)
+			slowLogInfo, err := s.slowLogQuerier.SlowlogInfo(ctx)
 			if err != nil {
 				logger.Warnf("listen slowlog path error, err: %v", err)
 

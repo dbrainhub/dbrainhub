@@ -29,7 +29,7 @@ func NewFilebeatService(agentConf *configs.AgentConfig, df dbs.DBOperationFactor
 		logger.Errorf("get local ip error, err: %v", err)
 		return nil, err
 	}
-	slowLogQuerier, err := df.CreateSlowlogQuerier()
+	slowLogQuerier, err := df.CreateVariablesCenter()
 	if err != nil {
 		logger.Errorf("createSlowLogQuerier error, err: %v", err)
 		return nil, err
@@ -89,7 +89,7 @@ type filebeatService struct {
 	// for slowlog listener
 	slowlogListenerInterval time.Duration
 
-	slowlogQuerier dbs.SlowLogInfoQuerier
+	slowlogQuerier dbs.VariablesCenter
 }
 
 // There are serveral steps below:

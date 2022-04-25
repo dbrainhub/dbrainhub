@@ -63,7 +63,7 @@ type MockSlowLogQuerier struct {
 	isReturnErr bool
 }
 
-func (m *MockSlowLogQuerier) Query(ctx context.Context) (*dbs.SlowLogInfo, error) {
+func (m *MockSlowLogQuerier) SlowlogInfo(ctx context.Context) (*dbs.SlowLogInfo, error) {
 	var res = &dbs.SlowLogInfo{
 		Path:   m.slowPathArr[m.i%len(m.slowPathArr)],
 		IsOpen: true,

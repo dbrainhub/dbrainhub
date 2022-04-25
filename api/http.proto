@@ -4,9 +4,10 @@ package api;
 
 option go_package = "./api";
 
-//run `protoc  -I ./ --proto_path=../ --go_out=../ ./http.proto`
+import "google/api/annotations.proto";
 
 message HelloWorldRequest {
+   // description here
     optional string ping = 1;
 }
 
@@ -16,16 +17,21 @@ message HelloWorldResponse {
 
 // heartbeat protocol
 message HeartbeatRequest {
-    message AgentInfo {
+    message Agent {
         string localip = 1;
+        double cpu_ratio = 2;
+        double disk_ratio = 3;
+        double mem_ratio = 4;
     }
-    AgentInfo agent_info = 1;
+    Agent agent_info = 1;
 
-    message DBInfo {
+    message DB {
         string dbtype = 1;
         int32 port = 2;
+        double qps = 3;
+        double tps = 4;
     }
-    DBInfo dbInfo = 2;
+    DB dbInfo = 2;
 }
 
 message HeartbeatResponse {
@@ -56,9 +62,20 @@ message StartupReportRequest {
     int32 port = 7;
     string os = 8;
     string os_version = 9;
+    string kernel_version = 10;
+    string env = 11;
 
 }
 
 message StartupReportResponse {
 
+}
+
+service DBRainhubService {
+  // title here    
+  rpc Hello (HelloWorldRequest) returns (HelloWorldResponse) {
+    option (google.api.http) = {
+      post: "/v1/hello"
+    };
+  }
 }
