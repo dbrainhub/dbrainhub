@@ -27,7 +27,7 @@ func main() {
 
 	config := configs.GetGlobalServerConfig()
 	if err := printConfig(config); err != nil {
-		logger.Errorf("print global config error, err: %v, exit...", err)
+		fmt.Fprintf(os.Stderr, "print global config error, err: %v, exit...", err)
 		os.Exit(1)
 	}
 
