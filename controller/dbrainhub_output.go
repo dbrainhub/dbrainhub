@@ -62,17 +62,31 @@ func DbRainhubOutput(c *gin.Context, req DbRainhubRequest) (*DbRainhubResponse, 
 		return nil, errors.DbClusterMemberNotAssigned("db member should be assigned to a cluster first.")
 	}
 
+	cluster, err := model.GetDbClusterById(c, db, member.ClusterId)
+	if err != nil {
+		return nil, err
+	}
+	clusterName := cluster.Name
+	clusterType := cluster.DbType
+
 	var failedEvents []int32
 	var buf bytes.Buffer
 
 	for i, eve := range events {
-		eb, err := json.Marshal(eve.Content.Fields)
+		data := eve.Content.Fields
+		data["cluster"] = clusterName
+		data["instance"] = fmt.Sprintf("%s:%d", dbIp, dbPort)
+		eb, err := json.Marshal(data)
 		if err != nil {
 			failedEvents = append(failedEvents, int32(i))
 			continue
 		}
 
-		indexName := genIndex()
+		indexName, err := genIndex(clusterType, &eve.Content)
+		if err != nil {
+			failedEvents = append(failedEvents, int32(i))
+			continue
+		}
 		pipeline, err := getPipeline(&eve.Content)
 		if err != nil {
 			failedEvents = append(failedEvents, int32(i))
@@ -108,9 +122,13 @@ type DbRainhubResponse struct {
 	FailedEvents []int32 `json:"failed_events"`
 }
 
-// TODO: index name
-func genIndex() string {
-	return "test-bulk"
+// Index name
+func genIndex(cluster string, event *beat.Event) (string, error) {
+	logType, err := event.Fields.GetValue("fileset.name")
+	if err != nil {
+		return "", err
+	}
+	return fmt.Sprintf("%s-%s", cluster, logType), nil
 }
 
 func getPipeline(event *beat.Event) (string, error) {

@@ -42,6 +42,14 @@ func FilebeatRateLimited(msg string) *ErrInfo {
 	return newErrInfo(1001, "FilebeatRateLimited", msg)
 }
 
+func FilebeatSearchParamsError(msg string) *ErrInfo {
+	return newErrInfo(1002, "FilebeatSearchParamsError", msg)
+}
+
+func FilebeatSearchError(msg string) *ErrInfo {
+	return newErrInfo(1003, "FilebeatSearchError", msg)
+}
+
 // 2000 - 2999 dbcluster 相关
 func InvalidDbType(msg string) *ErrInfo {
 	return newErrInfo(2000, "InvalidDbType", msg)

@@ -71,11 +71,120 @@ message StartupReportResponse {
 
 }
 
+message SearchMemberLogCountRequest {
+    string start_time = 1;
+    string end_time = 2;
+    string type = 3;
+    string db_ip = 4;
+    int32 db_port = 5;
+    int64 size = 6;
+    int64 from = 7;
+}
+
+message SearchMemberLogCountResponse {
+    int32 took = 1;
+    bool timed_out = 2;
+    int64 from = 3;
+    int64 size = 4;
+    HitsRes hits = 5;
+    AggsRes aggregations = 6;
+}
+
+message Total {
+    int64 value = 1;
+}
+
+message HitsRes {
+    Total total = 1;
+    repeated Hits hits = 2;
+}
+
+message SourceIp {
+    string ip = 1;
+}
+
+message Input {
+    string type = 1;
+}
+
+message Fileset {
+    string name = 1;
+}
+
+message Service {
+    string type = 1;
+}
+
+message Host {
+    string name = 1;
+}
+
+message LockTime {
+    float sec = 1;
+}
+
+message SlowLog {
+    string schema = 1;
+    LockTime lock_time = 2;
+    int32 rows_sent = 3;
+    int32 rows_examined = 4;
+    string query = 5;
+    string current_user = 6;
+}
+
+message Mysql {
+    int32 thread_id = 1;
+    SlowLog slowlog = 2;
+}
+
+message User {
+    string name = 1;
+}
+
+message Source {
+    string cluster = 1;
+    string instance = 2;
+    SourceIp source = 3;
+    Fileset fileset = 4;
+    Input input = 5;
+    string timestamp = 6 [json_name = "@timestamp"];
+    Service service = 7;
+    Host host = 8;
+    Mysql mysql = 9;
+    User user = 10;
+}
+
+message Hits {
+    string _index = 1;
+    string _id = 2;
+    Source _source = 3;
+}
+
+message AggsRes {
+    Logs logs = 1;
+}
+
+message Logs {
+    repeated Buckets buckets = 1;
+}
+
+message Buckets {
+    string key_as_string = 1;
+    int64 key = 2;
+    int32 doc_count = 3;
+}
+
 service DBRainhubService {
   // title here    
   rpc Hello (HelloWorldRequest) returns (HelloWorldResponse) {
     option (google.api.http) = {
       post: "/v1/hello"
     };
+  }
+
+  rpc DbRainhubSearchMemberLogsWithCount(SearchMemberLogCountRequest) returns (SearchMemberLogCountResponse) {
+      option (google.api.http) = {
+          post: "/dbrainhub/search/instance"
+      };
   }
 }
