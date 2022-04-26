@@ -2,12 +2,12 @@ package main
 
 import (
 	"bytes"
-	"encoding/json"
 	"flag"
 	"fmt"
 	"net/http"
 	"os"
 
+	"github.com/BurntSushi/toml"
 	"github.com/dbrainhub/dbrainhub/configs"
 	"github.com/dbrainhub/dbrainhub/router"
 	"github.com/dbrainhub/dbrainhub/server"
@@ -26,7 +26,7 @@ func main() {
 	configs.InitConfigOrPanic(*configFilePath, configs.GetGlobalServerConfig())
 
 	config := configs.GetGlobalServerConfig()
-	if err := printPrettyConfig(config); err != nil {
+	if err := printConfig(config); err != nil {
 		logger.Errorf("print global config error, err: %v, exit...", err)
 		os.Exit(1)
 	}
@@ -44,17 +44,12 @@ func main() {
 	}
 }
 
-func printPrettyConfig(config *configs.ServerConfig) error {
-	configBytes, err := json.Marshal(config)
-	if err != nil {
-		return err
-	}
+func printConfig(config *configs.ServerConfig) error {
 	var out bytes.Buffer
-	err = json.Indent(&out, configBytes, "", "\t")
-	if err != nil {
+	if err := toml.NewEncoder(&out).Encode(config); err != nil {
 		return err
 	}
 
-	fmt.Printf("global server config: %v\n", out.String())
+	fmt.Printf("global server config: \n%v\n", out.String())
 	return nil
 }
