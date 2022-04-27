@@ -2,7 +2,6 @@ package controller
 
 import (
 	"bytes"
-	"context"
 	"encoding/json"
 	"fmt"
 	"net"
@@ -98,7 +97,7 @@ func DbRainhubSearchMemberLogsWithCount(c *gin.Context, req api.SearchMemberLogC
 
 	_, es := GetRateLimiterAndEsClient(c)
 	res, err := es.Search(
-		es.Search.WithContext(context.Background()),
+		es.Search.WithContext(c),
 		es.Search.WithIndex(indexName),
 		es.Search.WithBody(&buf),
 		es.Search.WithTrackTotalHits(true),

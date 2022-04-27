@@ -183,6 +183,7 @@ service DBRainhubService {
   }
 
   rpc DbRainhubSearchMemberLogsWithCount(SearchMemberLogCountRequest) returns (SearchMemberLogCountResponse) {
+      // 根据实例查询慢日志内容和聚合trend信息
       option (google.api.http) = {
           post: "/dbrainhub/search/instance"
       };
