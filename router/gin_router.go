@@ -36,6 +36,7 @@ func (g *ginRouter) Init() {
 	g.server.POST("/tags", handlerWapper(handler.AddTag))
 	// dbrainhub output
 	g.server.POST("/dbrainhub/slowlogs", handlerWapper(handler.DbRainhubOutput))
+	g.server.POST("/dbrainhub/search/instance", handlerWapper(handler.DbRainhubSearchMemberLogsWithCount))
 }
 
 func (g *ginRouter) GetHandler() http.Handler {

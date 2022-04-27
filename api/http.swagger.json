@@ -16,6 +16,76 @@
     "application/json"
   ],
   "paths": {
+    "/dbrainhub/search/instance": {
+      "post": {
+        "summary": "根据实例查询慢日志内容和聚合trend信息",
+        "operationId": "DBRainhubService_DbRainhubSearchMemberLogsWithCount",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/apiSearchMemberLogCountResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "startTime",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "endTime",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "type",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "dbIp",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "dbPort",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "size",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "int64"
+          },
+          {
+            "name": "from",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "int64"
+          }
+        ],
+        "tags": [
+          "DBRainhubService"
+        ]
+      }
+    },
     "/v1/hello": {
       "post": {
         "summary": "title here",
@@ -50,10 +120,237 @@
     }
   },
   "definitions": {
+    "apiAggsRes": {
+      "type": "object",
+      "properties": {
+        "logs": {
+          "$ref": "#/definitions/apiLogs"
+        }
+      }
+    },
+    "apiBuckets": {
+      "type": "object",
+      "properties": {
+        "keyAsString": {
+          "type": "string"
+        },
+        "key": {
+          "type": "string",
+          "format": "int64"
+        },
+        "docCount": {
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "apiFileset": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        }
+      }
+    },
     "apiHelloWorldResponse": {
       "type": "object",
       "properties": {
         "pang": {
+          "type": "string"
+        }
+      }
+    },
+    "apiHits": {
+      "type": "object",
+      "properties": {
+        "Index": {
+          "type": "string"
+        },
+        "Id": {
+          "type": "string"
+        },
+        "Source": {
+          "$ref": "#/definitions/apiSource"
+        }
+      }
+    },
+    "apiHitsRes": {
+      "type": "object",
+      "properties": {
+        "total": {
+          "$ref": "#/definitions/apiTotal"
+        },
+        "hits": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/apiHits"
+          }
+        }
+      }
+    },
+    "apiHost": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        }
+      }
+    },
+    "apiInput": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string"
+        }
+      }
+    },
+    "apiLockTime": {
+      "type": "object",
+      "properties": {
+        "sec": {
+          "type": "number",
+          "format": "float"
+        }
+      }
+    },
+    "apiLogs": {
+      "type": "object",
+      "properties": {
+        "buckets": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/apiBuckets"
+          }
+        }
+      }
+    },
+    "apiMysql": {
+      "type": "object",
+      "properties": {
+        "threadId": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "slowlog": {
+          "$ref": "#/definitions/apiSlowLog"
+        }
+      }
+    },
+    "apiSearchMemberLogCountResponse": {
+      "type": "object",
+      "properties": {
+        "took": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "timedOut": {
+          "type": "boolean"
+        },
+        "from": {
+          "type": "string",
+          "format": "int64"
+        },
+        "size": {
+          "type": "string",
+          "format": "int64"
+        },
+        "hits": {
+          "$ref": "#/definitions/apiHitsRes"
+        },
+        "aggregations": {
+          "$ref": "#/definitions/apiAggsRes"
+        }
+      }
+    },
+    "apiService": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string"
+        }
+      }
+    },
+    "apiSlowLog": {
+      "type": "object",
+      "properties": {
+        "schema": {
+          "type": "string"
+        },
+        "lockTime": {
+          "$ref": "#/definitions/apiLockTime"
+        },
+        "rowsSent": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "rowsExamined": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "query": {
+          "type": "string"
+        },
+        "currentUser": {
+          "type": "string"
+        }
+      }
+    },
+    "apiSource": {
+      "type": "object",
+      "properties": {
+        "cluster": {
+          "type": "string"
+        },
+        "instance": {
+          "type": "string"
+        },
+        "source": {
+          "$ref": "#/definitions/apiSourceIp"
+        },
+        "fileset": {
+          "$ref": "#/definitions/apiFileset"
+        },
+        "input": {
+          "$ref": "#/definitions/apiInput"
+        },
+        "@timestamp": {
+          "type": "string"
+        },
+        "service": {
+          "$ref": "#/definitions/apiService"
+        },
+        "host": {
+          "$ref": "#/definitions/apiHost"
+        },
+        "mysql": {
+          "$ref": "#/definitions/apiMysql"
+        },
+        "user": {
+          "$ref": "#/definitions/apiUser"
+        }
+      }
+    },
+    "apiSourceIp": {
+      "type": "object",
+      "properties": {
+        "ip": {
+          "type": "string"
+        }
+      }
+    },
+    "apiTotal": {
+      "type": "object",
+      "properties": {
+        "value": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "apiUser": {
+      "type": "object",
+      "properties": {
+        "name": {
           "type": "string"
         }
       }
