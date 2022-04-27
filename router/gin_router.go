@@ -34,6 +34,8 @@ func (g *ginRouter) Init() {
 	// tags
 	g.server.GET("/tags/all", handlerWapper(handler.GetAllTags))
 	g.server.POST("/tags", handlerWapper(handler.AddTag))
+	// index
+	g.server.POST("/instance/indices", handlerWapper(handler.GetInstanceIndices))
 	// dbrainhub output
 	g.server.POST("/dbrainhub/slowlogs", handlerWapper(handler.DbRainhubOutput))
 	g.server.POST("/dbrainhub/search/instance", handlerWapper(handler.DbRainhubSearchMemberLogsWithCount))
