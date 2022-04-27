@@ -70,7 +70,6 @@ func (e *esClientImpl) AggregateAvg(ctx context.Context, field string, beginTime
 		return nil, fmt.Errorf("format es query body err: %v", err)
 	}
 
-	fmt.Println(buf.String())
 	searchRes, err := e.client.Search(
 		e.client.Search.WithContext(ctx),
 		e.client.Search.WithIndex("test-index"),
@@ -98,16 +97,6 @@ func genTerms(cond map[string]interface{}) []map[string]interface{} {
 			},
 		})
 	}
-	/*
-		res = append(res, map[string]interface{}{
-			"range": map[string]interface{}{
-				"@timestamp": map[string]interface{}{
-					"format": "strict_date_optional_time",
-					"gte":    from,
-					"lte":    to,
-				},
-			}})
-	*/
 	return res
 }
 
