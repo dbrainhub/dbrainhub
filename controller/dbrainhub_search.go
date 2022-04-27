@@ -16,7 +16,8 @@ import (
 )
 
 const (
-	DefaultSize = 20
+	DefaultSize    int64 = 20
+	DefaultBuckets int64 = 50
 )
 
 func DbRainhubSearchMemberLogsWithCount(c *gin.Context, req api.SearchMemberLogCountRequest) (*api.SearchMemberLogCountResponse, error) {
@@ -45,7 +46,11 @@ func DbRainhubSearchMemberLogsWithCount(c *gin.Context, req api.SearchMemberLogC
 	}
 
 	// interval
-	interval := search_time.GetInterval(req.StartTime, req.EndTime)
+	buckets := DefaultBuckets
+	if req.Buckets > 0 {
+		buckets = req.Buckets
+	}
+	interval := search_time.GetInterval(req.StartTime, req.EndTime, buckets)
 
 	var buf bytes.Buffer
 	query := map[string]interface{}{
@@ -126,6 +131,7 @@ func DbRainhubSearchMemberLogsWithCount(c *gin.Context, req api.SearchMemberLogC
 	}
 	searchRes.From = req.From
 	searchRes.Size = req.Size
+	searchRes.Aggregations.Interval = interval
 	return searchRes, nil
 }
 

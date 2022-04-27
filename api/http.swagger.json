@@ -79,6 +79,13 @@
             "required": false,
             "type": "string",
             "format": "int64"
+          },
+          {
+            "name": "buckets",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "int64"
           }
         ],
         "tags": [
@@ -125,6 +132,9 @@
       "properties": {
         "logs": {
           "$ref": "#/definitions/apiLogs"
+        },
+        "interval": {
+          "type": "string"
         }
       }
     },
