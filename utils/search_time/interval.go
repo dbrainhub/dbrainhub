@@ -2,62 +2,46 @@ package search_time
 
 import "time"
 
-var IntervalSeconds = []float64{
-	500,
-	5000,
-	7500,
-	15000,
-	45000,
-	180000,
-	450000,
-	1200000,
-	2700000,
-	7200000,
-	21600000,
-	86400000,
-	604800000,
-	1814400000,
-	3628800000,
+var Intervals = []Interval{
+	{500, "100ms"},
+	{5000, "1s"},
+	{7500,"5s"},
+	{15000,"10s"},
+	{45000,"30s"},
+	{180000,"1m"},
+	{450000,"5m"},
+	{1200000,"10m"},
+	{2700000,"30m"},
+	{7200000,"1h"},
+	{21600000,"3h"},
+	{86400000,"12h"},
+	{604800000, "24h"},
+	{1814400000, "1w"},
+	{3628800000, "30d"},
 }
-var IntervalStrings = []string{
-	"100ms",
-	"1s",
-	"5s",
-	"10s",
-	"30s",
-	"1m",
-	"5m",
-	"10m",
-	"30m",
-	"1h",
-	"3h",
-	"12h",
-	"24h",
-	"1w",
-	"30d",
+
+type Interval struct {
+	IntervalSecond float64
+	IntervalString string
 }
 
 func GetInterval(from, to string) string {
+	intervalStr := "1y"
 	fromT, err := time.ParseInLocation("2006-01-02T15:04:05Z", from, time.Local)
 	if err != nil {
-		return "1y"
+		return intervalStr
 	}
 	toT, err := time.ParseInLocation("2006-01-02T15:04:05Z", to, time.Local)
 	if err != nil {
-		return "1y"
+		return intervalStr
 	}
 	interval := toT.Sub(fromT).Seconds()
 
-	intervalStr := "1y"
-	loc := -1
-	for i, v := range IntervalSeconds {
-		if interval <= v {
-			loc = i
+	for _, v := range Intervals {
+		if interval <= v.IntervalSecond {
+			intervalStr = v.IntervalString
 			break
 		}
-	}
-	if loc > 0 {
-		intervalStr = IntervalStrings[loc]
 	}
 
 	return intervalStr
