@@ -18,6 +18,7 @@
   "paths": {
     "/dbrainhub/search/instance": {
       "post": {
+        "summary": "根据实例查询慢日志内容和聚合trend信息",
         "operationId": "DBRainhubService_DbRainhubSearchMemberLogsWithCount",
         "responses": {
           "200": {
