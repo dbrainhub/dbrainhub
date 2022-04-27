@@ -80,6 +80,7 @@ message SearchMemberLogCountRequest {
     int32 db_port = 5;
     int64 size = 6;
     int64 from = 7;
+    int64 buckets = 8;
 }
 
 message SearchMemberLogCountResponse {
