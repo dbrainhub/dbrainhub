@@ -2,8 +2,6 @@ package controller
 
 import (
 	"context"
-	"encoding/json"
-	"fmt"
 	"sync"
 	"time"
 
@@ -31,15 +29,7 @@ func GetInstanceIndices(c *gin.Context, req *api.GetInstanceIndicesRequest) (*ap
 		return nil, errors.ConnectToESFailed("NewEsClient error")
 	}
 
-	res := api.GetInstanceIndicesResponse{
-		CpuRatios:  []*api.GetInstanceIndicesResponse_IndexValue{},
-		DiskRatios: []*api.GetInstanceIndicesResponse_IndexValue{},
-		MemRatios:  []*api.GetInstanceIndicesResponse_IndexValue{},
-		Qps:        []*api.GetInstanceIndicesResponse_IndexValue{},
-		Tps:        []*api.GetInstanceIndicesResponse_IndexValue{},
-	}
-	str, _ := json.Marshal(res.CpuRatios)
-	fmt.Println(string(str))
+	var res api.GetInstanceIndicesResponse
 	var wg sync.WaitGroup
 
 	queryAvg := func(ctx context.Context, field string, res *[]*api.GetInstanceIndicesResponse_IndexValue) {
