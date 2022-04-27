@@ -28,8 +28,8 @@ func InitDefaultEsClientAsync(serverConf *configs.ServerConfig) error {
 
 	esClientAsync := &esClientAsync{
 		client:    client,
-		batchSize: serverConf.Server.ESBatchSize,
-		interval:  time.Duration(serverConf.Server.ESIntervalMs) * time.Millisecond,
+		batchSize: serverConf.OutputServer.ESBatchSize,
+		interval:  time.Duration(serverConf.OutputServer.ESIntervalMs) * time.Millisecond,
 	}
 	defaultEsClientAsync = esClientAsync
 

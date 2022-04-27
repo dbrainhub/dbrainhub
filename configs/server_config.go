@@ -11,10 +11,7 @@ import (
 
 type ServerConfig struct {
 	Server struct {
-		Address      string   `toml:"address"`
-		ESAddresses  []string `toml:"es_addresses"`
-		ESBatchSize  int      `toml:"es_batch_size"`
-		ESIntervalMs int      `toml:"es_interval_ms"`
+		Address string `toml:"address"`
 	} `toml:"server"`
 	DB struct {
 		Dialect  string `toml:"dialect"`
@@ -32,6 +29,8 @@ type ServerConfig struct {
 	OutputServer struct {
 		EsAddresses  []string `toml:"es_addresses"`
 		QpsThreshold int      `toml:"qps_threshold"`
+		ESBatchSize  int      `toml:"es_batch_size"`
+		ESIntervalMs int      `toml:"es_interval_ms"`
 	} `toml:"output_server"`
 }
 
