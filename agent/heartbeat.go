@@ -113,6 +113,7 @@ func (h *heartbeatImpl) heartbeat(ctx context.Context) {
 			CpuRatio:  cpuUsage,
 			MemRatio:  memUsage,
 			DiskRatio: diskUsage,
+			Datetime:  time.Now().Format("2006-01-02T15:04:05.999Z"),
 		},
 		DbInfo: &api.HeartbeatRequest_DB{
 			Dbtype: h.dbType,

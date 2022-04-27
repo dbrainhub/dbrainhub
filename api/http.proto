@@ -22,6 +22,7 @@ message HeartbeatRequest {
         double cpu_ratio = 2;
         double disk_ratio = 3;
         double mem_ratio = 4;
+        string datetime = 5;
     }
     Agent agent_info = 1;
 

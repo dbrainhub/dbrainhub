@@ -1,3 +1,4 @@
+[server]
 address = "127.0.0.1:1502"
 
 [db]
@@ -17,3 +18,5 @@ name = "dbrainhub.log"
 [output_server]
 es_addresses = ["http://127.0.0.1:9200"]
 qps_threshold = 100
+es_batch_size = 100
+es_interval_ms = 2000
