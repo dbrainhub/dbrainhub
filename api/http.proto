@@ -163,6 +163,7 @@ message Hits {
 
 message AggsRes {
     Logs logs = 1;
+    string interval = 2;
 }
 
 message Logs {

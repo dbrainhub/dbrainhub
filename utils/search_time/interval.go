@@ -21,11 +21,11 @@ var Intervals = []Interval{
 }
 
 type Interval struct {
-	IntervalSecond float64
+	IntervalMs     int64
 	IntervalString string
 }
 
-func GetInterval(from, to string) string {
+func GetInterval(from, to string, buckets int64) string {
 	intervalStr := "1y"
 	fromT, err := time.ParseInLocation("2006-01-02T15:04:05Z", from, time.Local)
 	if err != nil {
@@ -35,10 +35,10 @@ func GetInterval(from, to string) string {
 	if err != nil {
 		return intervalStr
 	}
-	interval := toT.Sub(fromT).Seconds()
+	interval := toT.Sub(fromT).Milliseconds() / buckets
 
 	for _, v := range Intervals {
-		if interval <= v.IntervalSecond {
+		if interval <= v.IntervalMs {
 			intervalStr = v.IntervalString
 			break
 		}

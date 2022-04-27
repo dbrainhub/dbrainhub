@@ -125,6 +125,9 @@
       "properties": {
         "logs": {
           "$ref": "#/definitions/apiLogs"
+        },
+        "interval": {
+          "type": "string"
         }
       }
     },
