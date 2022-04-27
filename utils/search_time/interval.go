@@ -2,7 +2,41 @@ package search_time
 
 import "time"
 
-// refer: https://github.com/elastic/kibana/blob/main/src/plugins/vis_types/timelion/common/lib/calculate_interval.ts#L13
+var IntervalSeconds = []float64{
+	500,
+	5000,
+	7500,
+	15000,
+	45000,
+	180000,
+	450000,
+	1200000,
+	2700000,
+	7200000,
+	21600000,
+	86400000,
+	604800000,
+	1814400000,
+	3628800000,
+}
+var IntervalStrings = []string{
+	"100ms",
+	"1s",
+	"5s",
+	"10s",
+	"30s",
+	"1m",
+	"5m",
+	"10m",
+	"30m",
+	"1h",
+	"3h",
+	"12h",
+	"24h",
+	"1w",
+	"30d",
+}
+
 func GetInterval(from, to string) string {
 	fromT, err := time.ParseInLocation("2006-01-02T15:04:05Z", from, time.Local)
 	if err != nil {
@@ -13,38 +47,18 @@ func GetInterval(from, to string) string {
 		return "1y"
 	}
 	interval := toT.Sub(fromT).Seconds()
-	switch true {
-	case interval <= 500: // <= 0.5s
-		return "100ms"
-	case interval <= 5000: // <= 5s
-		return "1s"
-	case interval <= 7500: // <= 7.5s
-		return "5s"
-	case interval <= 15000: // <= 15s
-		return "10s"
-	case interval <= 45000: // <= 45s
-		return "30s"
-	case interval <= 180000: // <= 3m
-		return "1m"
-	case interval <= 450000: // <= 9m
-		return "5m"
-	case interval <= 1200000: // <= 20m
-		return "10m"
-	case interval <= 2700000: // <= 45m
-		return "30m"
-	case interval <= 7200000: // <= 2h
-		return "1h"
-	case interval <= 21600000: // <= 6h
-		return "3h"
-	case interval <= 86400000: // <= 24h
-		return "12h"
-	case interval <= 604800000: // <= 1w
-		return "24h"
-	case interval <= 1814400000: // <= 3w
-		return "1w"
-	case interval < 3628800000: // <  2y
-		return "30d"
-	default:
-		return "1y"
+
+	intervalStr := "1y"
+	loc := -1
+	for i, v := range IntervalSeconds {
+		if interval <= v {
+			loc = i
+			break
+		}
 	}
+	if loc > 0 {
+		intervalStr = IntervalStrings[loc]
+	}
+
+	return intervalStr
 }
