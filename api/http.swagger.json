@@ -156,15 +156,15 @@
         ]
       }
     },
-    "/dbclusters/unassigned_members": {
+    "/dbclusters/to_assign_members": {
       "get": {
-        "summary": "集群-获取未分配实例列表",
-        "operationId": "DBRainhubService_GetUnassignedDbClusterMembers",
+        "summary": "集群-获取待分配实例列表",
+        "operationId": "DBRainhubService_GetToAssignDbClusterMembers",
         "responses": {
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/apiGetUnassignedDbClusterMembersResponse"
+              "$ref": "#/definitions/apiGetToAssignDbClusterMembersResponse"
             }
           },
           "default": {
@@ -176,14 +176,35 @@
         },
         "parameters": [
           {
-            "name": "offset",
+            "name": "dbType",
+            "description": "eg.mysql",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "env",
+            "description": "eg.test,prod",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "ipPrefix",
+            "description": "ip 前缀",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "limit",
             "in": "query",
             "required": false,
             "type": "integer",
             "format": "int32"
           },
           {
-            "name": "limit",
+            "name": "offset",
             "in": "query",
             "required": false,
             "type": "integer",
@@ -423,6 +444,15 @@
     }
   },
   "definitions": {
+    "DBClusterMemberExtraInfo": {
+      "type": "object",
+      "properties": {
+        "clusterName": {
+          "type": "string",
+          "title": "集群名（cluster_id != 0时存在）"
+        }
+      }
+    },
     "GetInstanceIndicesResponseIndexValue": {
       "type": "object",
       "properties": {
@@ -510,7 +540,7 @@
     "apiDBClusterMember": {
       "type": "object",
       "properties": {
-        "myid": {
+        "id": {
           "type": "integer",
           "format": "int32",
           "title": "成员id"
@@ -568,6 +598,9 @@
           "type": "string",
           "format": "int64",
           "title": "更新时间戳"
+        },
+        "extra": {
+          "$ref": "#/definitions/DBClusterMemberExtraInfo"
         }
       }
     },
@@ -647,7 +680,7 @@
         }
       }
     },
-    "apiGetUnassignedDbClusterMembersResponse": {
+    "apiGetToAssignDbClusterMembersResponse": {
       "type": "object",
       "properties": {
         "members": {

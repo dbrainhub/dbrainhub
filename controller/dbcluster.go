@@ -3,32 +3,57 @@ package controller
 import (
 	"context"
 	"fmt"
+
+	"github.com/dbrainhub/dbrainhub/api"
 	"github.com/dbrainhub/dbrainhub/errors"
 	"github.com/dbrainhub/dbrainhub/model"
 )
 
-func GetDbClusters(ctx context.Context, currUser *model.User, offset, limit int) ([]*model.DbCluster, error) {
+func GetDbClusters(ctx context.Context, currUser *model.User, offset, limit int) (*api.GetDBClustersResponse, error) {
 	db := model.GetDB(ctx)
-	return model.GetDbClusters(ctx, db, offset, limit)
+	clusters, err := model.GetDbClusters(ctx, db, offset, limit)
+	if err != nil {
+		return nil, err
+	}
+	return &api.GetDBClustersResponse{
+		Dbclusters: toDBClusters(clusters),
+	}, nil
 }
 
-type CreateDbClusterParams struct {
-	Name        string `json:"name"`
-	Description string `json:"description"`
-	DbType      string `json:"db_type"`
+func CreateDbCluster(ctx context.Context, currUser *model.User, params *api.NewDBClusterRequest) (*api.DBCluster, error) {
+	if err := validateNewDBClusterRequest(params); err != nil {
+		return nil, err
+	}
+	db := model.GetDB(ctx)
+	cluster, err := model.CreateDbCluster(ctx, db, params.Name, params.Description, params.DbType)
+	if err != nil {
+		return nil, err
+	}
+	return toDBCluster(cluster), nil
 }
 
-func (cdp *CreateDbClusterParams) Validate() error {
-	if cdp.DbType != model.DbTypeMySQL {
-		return errors.InvalidDbType(fmt.Sprintf("invalid db_type: %s", cdp.DbType))
+func validateNewDBClusterRequest(params *api.NewDBClusterRequest) error {
+	if params.DbType != model.DbTypeMySQL {
+		return errors.InvalidDbType(fmt.Sprintf("invalid db_type: %s", params.DbType))
 	}
 	return nil
 }
 
-func CreateDbCluster(ctx context.Context, currUser *model.User, params *CreateDbClusterParams) (*model.DbCluster, error) {
-	if err := params.Validate(); err != nil {
-		return nil, err
+func toDBClusters(clusters []*model.DbCluster) []*api.DBCluster {
+	var res []*api.DBCluster
+	for _, cluster := range clusters {
+		res = append(res, toDBCluster(cluster))
 	}
-	db := model.GetDB(ctx)
-	return model.CreateDbCluster(ctx, db, params.Name, params.Description, params.DbType)
+	return res
+}
+
+func toDBCluster(cluster *model.DbCluster) *api.DBCluster {
+	return &api.DBCluster{
+		Id:          cluster.Id,
+		Name:        cluster.Name,
+		Description: cluster.Description,
+		Dbtype:      cluster.DbType,
+		CreatedAt:   cluster.CreatedAt,
+		UpdatedAt:   cluster.UpdatedAt,
+	}
 }

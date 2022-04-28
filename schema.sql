@@ -23,6 +23,7 @@ CREATE TABLE IF NOT EXISTS `dbcluster_member` (
   `os` VARCHAR(32) NOT NULL,
   `os_version` VARCHAR(32) NOT NULL,
   `host_type` INT UNSIGNED NOT NULL,
+  `env` VARCHAR(32) NOT NULL,
   `ct` INT NOT NULL,
   `ut` INT NOT NULL,
   PRIMARY KEY (`id`),

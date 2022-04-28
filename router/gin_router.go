@@ -28,7 +28,7 @@ func (g *ginRouter) Init() {
 	g.server.POST("/dbclusters", handlerWapper(handler.CreateDbCluster))
 	g.server.GET("/dbclusters", handlerWapper(handler.GetDbClusters))
 	// dbcluster memebers
-	g.server.GET("/dbclusters/unassigned_members", handlerWapper(handler.GetUnassignedDbClusterMembers))
+	g.server.GET("/dbclusters/to_assign_members", handlerWapper(handler.GetToAssignedDbClusterMembers))
 	g.server.GET("/dbclusters/:clusterId/members", handlerWapper(handler.GetDbClusterMembers))
 	g.server.PUT("/dbclusters/:clusterId/members", handlerWapper(handler.AssignDbClusterMembers))
 	// tags

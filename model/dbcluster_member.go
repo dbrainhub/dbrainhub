@@ -20,12 +20,30 @@ type DbClusterMember struct {
 	Os        string `gorm:"column:os" json:"os"`
 	OsVersion string `gorm:"column:os_version" json:"os_version"`
 	HostType  int32  `gorm:"column:host_type" json:"host_type"`
+	Env       string `gorm:"column:env" json:"env"`
 	CreatedAt int64  `gorm:"column:ct" json:"created_at"`
 	UpdatedAt int64  `gorm:"column:ut" json:"updated_at"`
 }
 
 func (cm *DbClusterMember) TableName() string {
 	return "dbcluster_member"
+}
+
+type DBClusterMembers []*DbClusterMember
+
+func (d DBClusterMembers) UniqValidClusterIds() []int32 {
+	clusterIdMap := make(map[int32]bool)
+	for _, member := range d {
+		if member.ClusterId != 0 {
+			clusterIdMap[member.ClusterId] = true
+		}
+	}
+
+	var res []int32
+	for id := range clusterIdMap {
+		res = append(res, id)
+	}
+	return res
 }
 
 func GetDbClusterMembers(ctx context.Context, db *gorm.DB, clusterId int32) ([]*DbClusterMember, error) {
@@ -37,9 +55,16 @@ func GetDbClusterMembers(ctx context.Context, db *gorm.DB, clusterId int32) ([]*
 	return members, nil
 }
 
-func GetUnassignedClusterMembers(ctx context.Context, db *gorm.DB, offset int, limit int) ([]*DbClusterMember, error) {
+func GetToAssignClusterMembers(ctx context.Context, db *gorm.DB, dbtype, env string, ipPrefix *string, limit, offset int) (DBClusterMembers, error) {
+	optionalIpPrefix := "%"
+	if ipPrefix != nil {
+		optionalIpPrefix += *ipPrefix
+	}
 	var members []*DbClusterMember
-	err := db.Where("`cluster_id` = ?", 0).Offset(offset).Limit(limit).Find(&members).Error
+	err := db.Where("`db_type` = ? and `env` = ? and `ipaddr` like ?", dbtype, env, optionalIpPrefix).
+		Order("cluster_id asc"). // 优先 cluster_id = 0
+		Limit(limit).Offset(offset).
+		Find(&members).Error
 	if err != nil {
 		return nil, err
 	}
@@ -82,6 +107,7 @@ type NewDbClusterMember struct {
 	Os        string `gorm:"column:os" json:"os"`
 	OsVersion string `gorm:"column:os_version" json:"os_version"`
 	HostType  int32  `gorm:"column:host_type" json:"host_type"`
+	Env       string `gorm:"column:env" json:"env"`
 	// CreatedAt int64  `gorm:"column:ct"`
 	// UpdatedAt int64  `gorm:"column:ut"`
 }
@@ -100,6 +126,7 @@ func CreateDbClusterMember(ctx context.Context, db *gorm.DB, params *NewDbCluste
 		Os:        params.Os,
 		OsVersion: params.OsVersion,
 		HostType:  params.HostType,
+		Env:       params.Env,
 		CreatedAt: now,
 		UpdatedAt: now,
 	}
@@ -123,6 +150,7 @@ type UpdateDbClusterMemberParams struct {
 	Os        *string `gorm:"column:os" json:"os"`
 	OsVersion *string `gorm:"column:os_version" json:"os_version"`
 	HostType  *int32  `gorm:"column:host_type" json:"host_type"`
+	Env       *string `gorm:"column:env" json:"env"`
 }
 
 func UpdateDbClusterMember(ctx context.Context, db *gorm.DB, params *UpdateDbClusterMemberParams) error {
@@ -156,6 +184,9 @@ func UpdateDbClusterMember(ctx context.Context, db *gorm.DB, params *UpdateDbClu
 	}
 	if params.HostType != nil {
 		mp["host_type"] = *params.HostType
+	}
+	if params.Env != nil {
+		mp["env"] = *params.Env
 	}
 
 	if len(mp) == 0 { // nothing to do

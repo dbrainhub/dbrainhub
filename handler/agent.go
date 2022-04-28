@@ -12,21 +12,17 @@ const (
 	MaxLimit      = 100
 )
 
-type OffsetLimit struct {
-	Offset int `json:"offset" form:"offset" uri:"offset"`
-	Limit  int `json:"limit" form:"offset" uri:"limit"`
-}
-
-func (ol *OffsetLimit) AutoAdjust() {
-	if ol.Offset <= 0 {
-		ol.Offset = DefaultOffset
+func autoAdjustLimitAndOffset(limit, offset int32) (int32, int32) {
+	if offset <= 0 {
+		offset = DefaultOffset
 	}
-	if ol.Limit <= 0 {
-		ol.Limit = DefaultLimit
+	if limit <= 0 {
+		limit = DefaultLimit
 	}
-	if ol.Limit > MaxLimit {
-		ol.Limit = MaxLimit
+	if limit > MaxLimit {
+		limit = MaxLimit
 	}
+	return limit, offset
 }
 
 func Heartbeat(c *gin.Context) (interface{}, error) {
