@@ -80,7 +80,9 @@ func assignDBClusterMemberExtra(member *api.DBClusterMember, clusters []*model.D
 	}
 	for _, cluster := range clusters {
 		if cluster.Id == member.ClusterId {
-			member.Extra.ClusterName = cluster.Name
+			member.Extra = &api.DBClusterMember_ExtraInfo{
+				ClusterName: cluster.Name,
+			}
 		}
 	}
 }

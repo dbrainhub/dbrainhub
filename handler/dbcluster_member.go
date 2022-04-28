@@ -13,7 +13,7 @@ func GetToAssignedDbClusterMembers(c *gin.Context) (interface{}, error) {
 	}
 
 	var req api.GetToAssignDbClusterMembersRequest
-	if err := c.BindQuery(&req); err != nil {
+	if err := bindQuery(c, &req); err != nil {
 		return nil, err
 	}
 	req.Limit, req.Offset = autoAdjustLimitAndOffset(req.Limit, req.Offset)

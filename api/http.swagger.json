@@ -121,7 +121,7 @@
           "DBRainhubService"
         ]
       },
-      "post": {
+      "put": {
         "summary": "集群-实例分配到集群",
         "operationId": "DBRainhubService_AssignDbClusterMembers",
         "responses": {
@@ -191,7 +191,7 @@
           },
           {
             "name": "ipPrefix",
-            "description": "ip 前缀",
+            "description": "ip 前缀，可选",
             "in": "query",
             "required": false,
             "type": "string"
@@ -600,7 +600,8 @@
           "title": "更新时间戳"
         },
         "extra": {
-          "$ref": "#/definitions/DBClusterMemberExtraInfo"
+          "$ref": "#/definitions/DBClusterMemberExtraInfo",
+          "title": "可能不存在"
         }
       }
     },

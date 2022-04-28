@@ -13,12 +13,12 @@ func GetDbClusters(c *gin.Context) (interface{}, error) {
 	}
 
 	var req api.GetDBClustersRequest
-	if err := c.BindQuery(&req); err != nil {
+	if err := bindQuery(c, &req); err != nil {
 		return nil, err
 	}
 	req.Limit, req.Offset = autoAdjustLimitAndOffset(req.Limit, req.Offset)
 
-	return controller.GetDbClusters(c, currUser, int(req.Limit), int(req.Offset))
+	return controller.GetDbClusters(c, currUser, int(req.Offset), int(req.Limit))
 }
 
 func CreateDbCluster(c *gin.Context) (interface{}, error) {
