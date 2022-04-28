@@ -92,6 +92,18 @@
             "in": "query",
             "required": false,
             "type": "string"
+          },
+          {
+            "name": "memberIds",
+            "description": "实例id列表",
+            "in": "query",
+            "required": false,
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "collectionFormat": "multi"
           }
         ],
         "tags": [

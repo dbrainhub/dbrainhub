@@ -29,6 +29,11 @@ func CreateDbCluster(ctx context.Context, currUser *model.User, params *api.NewD
 	if err != nil {
 		return nil, err
 	}
+
+	err = model.BatchAssignMembersToCluster(ctx, db, params.MemberIds, cluster.Id)
+	if err != nil {
+		return nil, err
+	}
 	return toDBCluster(cluster), nil
 }
 

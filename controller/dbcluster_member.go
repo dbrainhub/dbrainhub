@@ -52,8 +52,40 @@ func AssignClusterMembers(ctx context.Context, currUser *model.User, clusterId i
 		return err
 	}
 
-	// 新的 Assign 会覆盖掉之前的。允许向一个集群中添加多次实例。
-	err = model.BatchAssignMembersToCluster(ctx, db, memberIds, clusterId)
+	// 先查到 clusterId 的所有 member
+	// 并根据传入的 memberIds，将原来的 member 分为 3 类分别处理: 1)新增到 cluster 中; 2)从 cluster 中移除; 3)不变
+	OldMembers, err := model.GetDbClusterMembers(ctx, db, clusterId)
+	if err != nil {
+		return err
+	}
+	oldMemberIds := map[int32]struct{}{}
+	for _, m := range OldMembers {
+		oldMemberIds[m.Id] = struct{}{}
+	}
+
+	memberIdMap := map[int32]struct{}{}
+	for _, mid := range memberIds {
+		memberIdMap[mid] = struct{}{}
+	}
+
+	toAdd := []int32{}
+	toDel := []int32{}
+	for mid := range memberIdMap {
+		if _, ok := oldMemberIds[mid]; !ok {
+			toAdd = append(toAdd, mid)
+		}
+	}
+	for mid := range oldMemberIds {
+		if _, ok := memberIdMap[mid]; !ok {
+			toDel = append(toDel, mid)
+		}
+	}
+
+	err = model.BatchAssignMembersToCluster(ctx, db, toAdd, clusterId)
+	if err != nil {
+		return err
+	}
+	err = model.BatchUnassignClusterMembers(ctx, db, toDel)
 	if err != nil {
 		return err
 	}

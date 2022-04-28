@@ -208,6 +208,8 @@ message NewDBClusterRequest {
     string description = 2;
     // db类型
     string db_type = 3;
+    // 实例id列表
+    repeated int32 member_ids = 4;
 }
 
 message DBClusterMember {
