@@ -16,6 +16,185 @@
     "application/json"
   ],
   "paths": {
+    "/dbclusters": {
+      "get": {
+        "summary": "集群-获取集群列表",
+        "operationId": "DBRainhubService_GetDBClusters",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/apiGetDBClustersResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          }
+        ],
+        "tags": [
+          "DBRainhubService"
+        ]
+      },
+      "post": {
+        "summary": "集群-创建新集群",
+        "operationId": "DBRainhubService_NewDBClusters",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/apiDBCluster"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "name",
+            "description": "集群名",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "description",
+            "description": "集群描述",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "dbType",
+            "description": "db类型",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "DBRainhubService"
+        ]
+      }
+    },
+    "/dbclusters/:clusterId/members": {
+      "get": {
+        "summary": "集群-得到集群成员列表",
+        "operationId": "DBRainhubService_GetDbClusterMembers",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/apiGetDbClusterMembersResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "tags": [
+          "DBRainhubService"
+        ]
+      },
+      "post": {
+        "summary": "集群-实例分配到集群",
+        "operationId": "DBRainhubService_AssignDbClusterMembers",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/apiAssignDbClusterMembersResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "memberIds",
+            "in": "query",
+            "required": false,
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "collectionFormat": "multi"
+          }
+        ],
+        "tags": [
+          "DBRainhubService"
+        ]
+      }
+    },
+    "/dbclusters/unassigned_members": {
+      "get": {
+        "summary": "集群-获取未分配实例列表",
+        "operationId": "DBRainhubService_GetUnassignedDbClusterMembers",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/apiGetUnassignedDbClusterMembersResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          }
+        ],
+        "tags": [
+          "DBRainhubService"
+        ]
+      }
+    },
     "/dbrainhub/search/instance": {
       "post": {
         "summary": "查询实例的慢日志内容和聚合trend信息",
@@ -93,6 +272,123 @@
         ]
       }
     },
+    "/instance/indices": {
+      "post": {
+        "summary": "指标-获取所有指标",
+        "operationId": "DBRainhubService_GetInstanceIndices",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/apiGetInstanceIndicesResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "host",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "port",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "from",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "to",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "DBRainhubService"
+        ]
+      }
+    },
+    "/tags": {
+      "post": {
+        "summary": "tags-添加tag",
+        "operationId": "DBRainhubService_AddTag",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/apiAddTagResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "itemType",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "itemId",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "tag",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "DBRainhubService"
+        ]
+      }
+    },
+    "/tags/all": {
+      "get": {
+        "summary": "tags-获取所有tags",
+        "operationId": "DBRainhubService_GetAllTags",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/apiGetAllTagsResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "tags": [
+          "DBRainhubService"
+        ]
+      }
+    },
     "/v1/hello": {
       "post": {
         "summary": "title here",
@@ -127,6 +423,28 @@
     }
   },
   "definitions": {
+    "GetInstanceIndicesResponseIndexValue": {
+      "type": "object",
+      "properties": {
+        "value": {
+          "type": "number",
+          "format": "double",
+          "title": "指标值；"
+        },
+        "count": {
+          "type": "string",
+          "format": "int64",
+          "title": "计算当前指标值元素个数；"
+        },
+        "startTime": {
+          "type": "string",
+          "title": "该指标值对应的起始时间"
+        }
+      }
+    },
+    "apiAddTagResponse": {
+      "type": "object"
+    },
     "apiAggsRes": {
       "type": "object",
       "properties": {
@@ -137,6 +455,9 @@
           "type": "string"
         }
       }
+    },
+    "apiAssignDbClusterMembersResponse": {
+      "type": "object"
     },
     "apiBuckets": {
       "type": "object",
@@ -154,11 +475,186 @@
         }
       }
     },
+    "apiDBCluster": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "int32",
+          "title": "集群 id"
+        },
+        "name": {
+          "type": "string",
+          "title": "集群名"
+        },
+        "description": {
+          "type": "string",
+          "title": "集群类型"
+        },
+        "dbtype": {
+          "type": "string",
+          "title": "db 类型：mysql"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "int64",
+          "title": "创建时间戳"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "int64",
+          "title": "更新时间戳"
+        }
+      }
+    },
+    "apiDBClusterMember": {
+      "type": "object",
+      "properties": {
+        "myid": {
+          "type": "integer",
+          "format": "int32",
+          "title": "成员id"
+        },
+        "clusterId": {
+          "type": "integer",
+          "format": "int32",
+          "title": "集群 id"
+        },
+        "hostname": {
+          "type": "string",
+          "title": "主机名"
+        },
+        "dbType": {
+          "type": "string",
+          "title": "db类型：mysql"
+        },
+        "dbVersion": {
+          "type": "string",
+          "title": "db 版本"
+        },
+        "role": {
+          "type": "integer",
+          "format": "int32",
+          "title": "角色"
+        },
+        "ipaddr": {
+          "type": "string",
+          "title": "ip"
+        },
+        "port": {
+          "type": "integer",
+          "format": "int32",
+          "title": "db port"
+        },
+        "os": {
+          "type": "string",
+          "title": "操作系统"
+        },
+        "osVersion": {
+          "type": "string",
+          "title": "操作系统发型版本"
+        },
+        "hostType": {
+          "type": "integer",
+          "format": "int32",
+          "title": "主机类型：0：未指定，1：自有；2：阿里云，3：腾讯云"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "int64",
+          "title": "创建时间戳"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "int64",
+          "title": "更新时间戳"
+        }
+      }
+    },
     "apiFileset": {
       "type": "object",
       "properties": {
         "name": {
           "type": "string"
+        }
+      }
+    },
+    "apiGetAllTagsResponse": {
+      "type": "object",
+      "properties": {
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "apiGetDBClustersResponse": {
+      "type": "object",
+      "properties": {
+        "dbclusters": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/apiDBCluster"
+          }
+        }
+      }
+    },
+    "apiGetDbClusterMembersResponse": {
+      "type": "object",
+      "properties": {
+        "members": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/apiDBClusterMember"
+          }
+        }
+      }
+    },
+    "apiGetInstanceIndicesResponse": {
+      "type": "object",
+      "properties": {
+        "cpuRatios": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/GetInstanceIndicesResponseIndexValue"
+          }
+        },
+        "memRatios": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/GetInstanceIndicesResponseIndexValue"
+          }
+        },
+        "diskRatios": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/GetInstanceIndicesResponseIndexValue"
+          }
+        },
+        "qps": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/GetInstanceIndicesResponseIndexValue"
+          }
+        },
+        "tps": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/GetInstanceIndicesResponseIndexValue"
+          }
+        }
+      }
+    },
+    "apiGetUnassignedDbClusterMembersResponse": {
+      "type": "object",
+      "properties": {
+        "members": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/apiDBClusterMember"
+          }
         }
       }
     },

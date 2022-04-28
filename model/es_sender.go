@@ -8,11 +8,18 @@ import (
 	esClient "github.com/elastic/go-elasticsearch/v8"
 )
 
-type EsClient interface {
+type (
+	ESClient interface {
+		EsSender
+		EsAvgAggs
+	}
+)
+
+type EsSender interface {
 	SendBatch(msgs []*ESMessage) error
 }
 
-func NewEsClient(addresses []string) (EsClient, error) {
+func NewEsClient(addresses []string) (ESClient, error) {
 	esCfg := esClient.Config{
 		Addresses: addresses,
 	}

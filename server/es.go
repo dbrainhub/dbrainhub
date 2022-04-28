@@ -38,7 +38,7 @@ func InitDefaultEsClientAsync(serverConf *configs.ServerConfig) error {
 }
 
 type esClientAsync struct {
-	client    model.EsClient
+	client    model.EsSender
 	batchSize int
 	interval  time.Duration
 
