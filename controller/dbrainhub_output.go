@@ -7,11 +7,13 @@ import (
 	"fmt"
 	"strings"
 	"sync"
+	"time"
 
 	"github.com/dbrainhub/dbrainhub/configs"
 	"github.com/dbrainhub/dbrainhub/errors"
 	"github.com/dbrainhub/dbrainhub/model"
 	"github.com/dbrainhub/dbrainhub/utils/rate_limit"
+	"github.com/dbrainhub/dbrainhub/utils/search_time"
 	"github.com/elastic/beats/v7/libbeat/beat"
 	"github.com/elastic/beats/v7/libbeat/beat/events"
 	"github.com/elastic/beats/v7/libbeat/common"
@@ -128,7 +130,12 @@ func genIndex(cluster string, event *beat.Event) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	return fmt.Sprintf("%s-%s", cluster, logType), nil
+	// get week
+	_, week, err := search_time.GetYearAndWeek(time.Now().Format("2006-01-02T15:04:05Z"))
+	if err != nil {
+		return "", err
+	}
+	return fmt.Sprintf("%s-%s-%dw", cluster, logType, week), nil
 }
 
 func getPipeline(event *beat.Event) (string, error) {
