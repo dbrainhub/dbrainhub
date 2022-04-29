@@ -38,7 +38,7 @@ func DbRainhubSearchMemberLogsWithCount(c *gin.Context, req api.SearchMemberLogC
 	}
 
 	dbType := member.DbType
-	indexName := fmt.Sprintf("%s-%s", dbType, req.Type)
+	indexName := fmt.Sprintf("%s-%s-*", dbType, req.Type)
 
 	size := req.Size
 	if size == 0 {
