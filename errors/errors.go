@@ -110,3 +110,12 @@ func DbClusterMemberNotAssigned(msg string) *ErrInfo {
 func InvalidItemType(msg string) *ErrInfo {
 	return newErrInfo(5000, "InvalidItemType", msg)
 }
+
+// 6000-6999 es index 相关
+func InvalidTimeDuration(format string, a ...interface{}) *ErrInfo {
+	return newErrInfo(6000, "InvalidTimeDuration", fmt.Sprintf(format, a...))
+}
+
+func ConnectToESFailed(format string, a ...interface{}) *ErrInfo {
+	return newErrInfo(6001, "ConnectToESFailed", fmt.Sprintf(format, a...))
+}
