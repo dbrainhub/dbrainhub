@@ -2,9 +2,10 @@ package model
 
 import (
 	"context"
+	"time"
+
 	"github.com/dbrainhub/dbrainhub/errors"
 	"gorm.io/gorm"
-	"time"
 )
 
 const (
@@ -56,6 +57,18 @@ func GetDbClusterByName(ctx context.Context, db *gorm.DB, name string) (*DbClust
 		return nil, err
 	}
 	return &cluster, nil
+}
+
+func GetDbClusterByIds(ctx context.Context, db *gorm.DB, ids []int32) ([]*DbCluster, error) {
+	if len(ids) == 0 {
+		return nil, nil
+	}
+	var clusters []*DbCluster
+	err := db.Where("`id` in ?", ids).Find(&clusters).Error
+	if err != nil {
+		return nil, err
+	}
+	return clusters, nil
 }
 
 func CreateDbCluster(ctx context.Context, db *gorm.DB, name string, description string, dbType string) (*DbCluster, error) {

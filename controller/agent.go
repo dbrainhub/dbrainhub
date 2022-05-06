@@ -81,6 +81,7 @@ func Report(c *gin.Context, req *api.StartupReportRequest) (*api.StartupReportRe
 		Os:        req.Os,
 		OsVersion: req.OsVersion,
 		HostType:  int32(req.HostType),
+		Env:       req.Env,
 	}
 	if member == nil {
 		if _, err := model.CreateDbClusterMember(c, model.GetDB(c), insertParam); err != nil {
@@ -99,6 +100,7 @@ func Report(c *gin.Context, req *api.StartupReportRequest) (*api.StartupReportRe
 			Os:        &insertParam.Os,
 			OsVersion: &insertParam.OsVersion,
 			HostType:  &insertParam.HostType,
+			Env:       &insertParam.Env,
 		}
 		if err := model.UpdateDbClusterMember(c, model.GetDB(c), updateParam); err != nil {
 			logger.Errorf("UpdateDbClusterMember error when report, err: %v, req: %#v", err, req)

@@ -4,6 +4,7 @@ import (
 	"github.com/dbrainhub/dbrainhub/api"
 	"github.com/dbrainhub/dbrainhub/controller"
 	"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin/binding"
 )
 
 const (
@@ -12,21 +13,25 @@ const (
 	MaxLimit      = 100
 )
 
-type OffsetLimit struct {
-	Offset int `json:"offset" form:"offset" uri:"offset"`
-	Limit  int `json:"limit" form:"offset" uri:"limit"`
+func autoAdjustLimitAndOffset(limit, offset int32) (int32, int32) {
+	if offset < 0 {
+		offset = DefaultOffset
+	}
+	if limit <= 0 {
+		limit = DefaultLimit
+	}
+	if limit > MaxLimit {
+		limit = MaxLimit
+	}
+	return limit, offset
 }
 
-func (ol *OffsetLimit) AutoAdjust() {
-	if ol.Offset <= 0 {
-		ol.Offset = DefaultOffset
+// 将 GET 请求参数映射到结构体，需要结构体字段包含 form tag。proto 不支持添加自定义 tag。
+func bindQuery(c *gin.Context, obj interface{}) error {
+	if err := c.Request.ParseForm(); err != nil {
+		return err
 	}
-	if ol.Limit <= 0 {
-		ol.Limit = DefaultLimit
-	}
-	if ol.Limit > MaxLimit {
-		ol.Limit = MaxLimit
-	}
+	return binding.MapFormWithTag(obj, c.Request.Form, "json") // 使用 json tag
 }
 
 func Heartbeat(c *gin.Context) (interface{}, error) {

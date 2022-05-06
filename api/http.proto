@@ -208,11 +208,13 @@ message NewDBClusterRequest {
     string description = 2;
     // db类型
     string db_type = 3;
+    // 实例id列表
+    repeated int32 member_ids = 4;
 }
 
 message DBClusterMember {
     // 成员id
-    int32 id = 1 [json_name = "myid"];
+    int32 id = 1;
     // 集群 id
     int32 cluster_id = 2;
     // 主机名
@@ -237,14 +239,28 @@ message DBClusterMember {
     int64 created_at = 12;
     // 更新时间戳
     int64 updated_at = 13;
+
+    message ExtraInfo {
+        // 集群名（cluster_id != 0时存在）
+        string cluster_name = 1;
+    }
+    // 可能不存在
+    optional ExtraInfo extra = 99;
+
 }
 
-message GetUnassignedDbClusterMembersRequest {
-    int32 offset = 1;
-    int32 limit = 2;
+message GetToAssignDbClusterMembersRequest {
+    // eg.mysql
+    string db_type = 1;
+    // eg.test,prod
+    string env = 2;
+    // ip 前缀，可选
+    optional string ip_prefix = 3;
+    int32 limit = 4;
+    int32 offset = 5;
 }
 
-message GetUnassignedDbClusterMembersResponse {
+message GetToAssignDbClusterMembersResponse {
     repeated DBClusterMember members = 1;
 }
 
@@ -329,10 +345,10 @@ service DBRainhubService {
         };
     }
 
-    // 集群-获取未分配实例列表
-    rpc GetUnassignedDbClusterMembers (GetUnassignedDbClusterMembersRequest) returns (GetUnassignedDbClusterMembersResponse) {
+    // 集群-获取待分配实例列表
+    rpc GetToAssignDbClusterMembers (GetToAssignDbClusterMembersRequest) returns (GetToAssignDbClusterMembersResponse) {
         option (google.api.http) = {
-            get: "/dbclusters/unassigned_members"
+            get: "/dbclusters/to_assign_members"
         };
     }
 
@@ -346,7 +362,7 @@ service DBRainhubService {
     // 集群-实例分配到集群
     rpc AssignDbClusterMembers (AssignDbClusterMembersRequest) returns (AssignDbClusterMembersResponse) {
         option (google.api.http) = {
-            post: "/dbclusters/:clusterId/members"
+            put: "/dbclusters/:clusterId/members"
         };
     }
 
