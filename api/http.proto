@@ -299,6 +299,7 @@ message GetInstanceIndicesRequest {
     int32 port = 2;
     string from = 3;
     string to = 4;
+    int64 buckets = 5;
 }
 
 message GetInstanceIndicesResponse {

@@ -4,6 +4,7 @@ import (
 	"github.com/dbrainhub/dbrainhub/api"
 	"github.com/dbrainhub/dbrainhub/errors"
 	"github.com/dbrainhub/dbrainhub/model"
+	"github.com/dbrainhub/dbrainhub/model/es"
 	"github.com/dbrainhub/dbrainhub/server"
 	"github.com/dbrainhub/dbrainhub/utils/logger"
 	"github.com/gin-gonic/gin"
@@ -27,6 +28,12 @@ func Heartbeat(c *gin.Context, req *api.HeartbeatRequest) (*api.HeartbeatRespons
 		return nil, errors.AgentHeartbeatError("visit db error")
 	}
 
+	cluster, err := model.GetDbClusterById(c, model.GetDB(c), member.ClusterId)
+	if err != nil {
+		logger.Errorf("GetDbClusterById error when find cluster, err: %v, req: %#v", err, req)
+		return nil, err
+	}
+
 	port := int16(req.DbInfo.Port)
 	updateParam := &model.UpdateDbClusterMemberParams{
 		Id:     member.Id,
@@ -38,11 +45,11 @@ func Heartbeat(c *gin.Context, req *api.HeartbeatRequest) (*api.HeartbeatRespons
 		return nil, errors.AgentHeartbeatError("update cluster member failed")
 	}
 
-	server.GetDefaultEsClientAsync().Send(&model.ESMessage{
-		Meta: &model.ESMeta{
-			Index: "test-index",
+	server.GetDefaultAsyncESClient().Send([]*es.ESMessage{{
+		Meta: &es.ESMeta{
+			Index: server.GetIndicesIndexName(),
 		},
-		Data: &model.AgentIndexData{
+		Data: &es.AgentIndexData{
 			TimeStamp: req.AgentInfo.Datetime,
 			IP:        req.AgentInfo.Localip,
 			Port:      int(req.DbInfo.Port),
@@ -51,8 +58,9 @@ func Heartbeat(c *gin.Context, req *api.HeartbeatRequest) (*api.HeartbeatRespons
 			DiskRatio: req.AgentInfo.DiskRatio,
 			QPS:       req.DbInfo.Qps,
 			TPS:       req.DbInfo.Tps,
+			Cluster:   cluster.Name,
 		},
-	})
+	}})
 
 	return &api.HeartbeatResponse{}, nil
 }

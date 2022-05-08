@@ -8,6 +8,11 @@ import (
 
 var ErrRateLimited error = errors.New("rate limited")
 
+type RateLimiter interface {
+	Limit() error
+	ChangeQpsThreshold(newQpsThreshold int64)
+}
+
 // 基于滑动窗口的，并发安全的限流器。
 type SlidingWindowRateLimiter struct {
 	sw           *SlidingWindow // guarded by mu

@@ -8,7 +8,7 @@ import (
 )
 
 func TestGetCPU(t *testing.T) {
-	cpuUtils := NewCPUUitls(0)
+	cpuUtils := NewCPUUitls(context.Background(), 0)
 	usage, err := cpuUtils.Usage(context.Background())
 	assert.Nil(t, err)
 	assert.Greater(t, usage, 0.0)
