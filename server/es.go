@@ -46,8 +46,9 @@ func InitDefaultESClient(serverConf *configs.ServerConfig) error {
 
 // storage for indices such as cpu/mem
 func GetIndicesIndexName() string {
+	indexPrefix := configs.GetGlobalServerConfig().OutputServer.IndicesIndexPrefix
 	year, week, _ := search_time.GetYearAndWeek(time.Now().Format("2006-01-02T15:04:05Z"))
-	return fmt.Sprintf("instances-%d-%dw", year, week)
+	return fmt.Sprintf("%s%d-%d", indexPrefix, year, week)
 }
 
 var defaultAsyncEsClient *asyncESClient

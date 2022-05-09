@@ -27,10 +27,11 @@ type ServerConfig struct {
 		Name   string `toml:"name"`
 	} `toml:"log_info"`
 	OutputServer struct {
-		EsAddresses  []string `toml:"es_addresses"`
-		QpsThreshold int      `toml:"qps_threshold"`
-		ESBatchSize  int      `toml:"es_batch_size"`
-		ESIntervalMs int      `toml:"es_interval_ms"`
+		EsAddresses        []string `toml:"es_addresses"`
+		QpsThreshold       int      `toml:"qps_threshold"`
+		ESBatchSize        int      `toml:"es_batch_size"`
+		ESIntervalMs       int      `toml:"es_interval_ms"`
+		IndicesIndexPrefix string   `toml:"indices_index_prefix"`
 	} `toml:"output_server"`
 }
 
