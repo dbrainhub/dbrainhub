@@ -1,52 +1,27 @@
 package controller
 
 import (
-	"bytes"
-	"context"
-	"encoding/json"
 	"fmt"
 	"strings"
-	"sync"
 	"time"
 
-	"github.com/dbrainhub/dbrainhub/configs"
 	"github.com/dbrainhub/dbrainhub/errors"
 	"github.com/dbrainhub/dbrainhub/model"
+	"github.com/dbrainhub/dbrainhub/model/es"
+	"github.com/dbrainhub/dbrainhub/server"
 	"github.com/dbrainhub/dbrainhub/utils/rate_limit"
 	"github.com/dbrainhub/dbrainhub/utils/search_time"
 	"github.com/elastic/beats/v7/libbeat/beat"
 	"github.com/elastic/beats/v7/libbeat/beat/events"
 	"github.com/elastic/beats/v7/libbeat/common"
 	"github.com/elastic/beats/v7/libbeat/publisher"
-	esClient "github.com/elastic/go-elasticsearch/v8"
 	"github.com/gin-gonic/gin"
 )
 
-var limiter *rate_limit.SlidingWindowRateLimiter
-var es *esClient.Client
-var once = sync.Once{}
-
-func GetRateLimiterAndEsClient(ctx context.Context) (*rate_limit.SlidingWindowRateLimiter, *esClient.Client) {
-	var err error
-	once.Do(func() {
-		cfg := configs.GetGlobalServerConfig().OutputServer
-		limiter = rate_limit.NewSlidingWindowRateLimiter(int64(cfg.QpsThreshold))
-
-		esCfg := esClient.Config{
-			Addresses: cfg.EsAddresses,
-		}
-		es, err = esClient.NewClient(esCfg)
-		if err != nil {
-			panic(err)
-		}
-	})
-	return limiter, es
-}
-
 func DbRainhubOutput(c *gin.Context, req DbRainhubRequest) (*DbRainhubResponse, error) {
 	// limiter check
-	limiter, es := GetRateLimiterAndEsClient(c)
-	err := limiter.Limit()
+	client := server.GetDefaultESClientWithRateLimiter()
+	err := client.Limit()
 	if err == rate_limit.ErrRateLimited {
 		return nil, errors.FilebeatRateLimited("dbrainhub output triggers the rate limit.")
 	}
@@ -72,18 +47,12 @@ func DbRainhubOutput(c *gin.Context, req DbRainhubRequest) (*DbRainhubResponse, 
 	clusterType := cluster.DbType
 
 	var failedEvents []int32
-	var buf bytes.Buffer
+	var msgs []*es.ESMessage
 
 	for i, eve := range events {
 		data := eve.Content.Fields
 		data["cluster"] = clusterName
 		data["instance"] = fmt.Sprintf("%s:%d", dbIp, dbPort)
-		eb, err := json.Marshal(data)
-		if err != nil {
-			failedEvents = append(failedEvents, int32(i))
-			continue
-		}
-
 		indexName, err := genIndex(clusterType, &eve.Content)
 		if err != nil {
 			failedEvents = append(failedEvents, int32(i))
@@ -94,13 +63,16 @@ func DbRainhubOutput(c *gin.Context, req DbRainhubRequest) (*DbRainhubResponse, 
 			failedEvents = append(failedEvents, int32(i))
 			continue
 		}
-		meta := []byte(fmt.Sprintf(`{ "create" : { "_index":"%s", "pipeline":"%s" } }%s`, indexName, pipeline, "\n"))
-		buf.Grow(len(meta) + len(eb) + 1)
-		buf.Write(meta)
-		buf.Write(eb)
-		buf.WriteByte('\n')
+		msgs = append(msgs, &es.ESMessage{
+			Meta: &es.ESMeta{
+				Index:    indexName,
+				Pipeline: pipeline,
+			},
+			Data: data,
+		})
 	}
-	_, err = es.Bulk(&buf)
+
+	err = client.Send(msgs)
 	if err != nil {
 		// bulk failed, all events failed to retry in filebeat.
 		for i := 0; i < len(events); i++ {

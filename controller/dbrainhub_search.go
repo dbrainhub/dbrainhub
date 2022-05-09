@@ -1,8 +1,6 @@
 package controller
 
 import (
-	"bytes"
-	"encoding/json"
 	"fmt"
 	"net"
 	"time"
@@ -10,9 +8,9 @@ import (
 	"github.com/dbrainhub/dbrainhub/api"
 	"github.com/dbrainhub/dbrainhub/errors"
 	"github.com/dbrainhub/dbrainhub/model"
+	"github.com/dbrainhub/dbrainhub/model/es"
 	"github.com/dbrainhub/dbrainhub/utils/search_time"
 	"github.com/gin-gonic/gin"
-	"github.com/golang/protobuf/jsonpb"
 )
 
 const (
@@ -20,7 +18,7 @@ const (
 	DefaultBuckets int64 = 50
 )
 
-func DbRainhubSearchMemberLogsWithCount(c *gin.Context, req api.SearchMemberLogCountRequest) (*api.SearchMemberLogCountResponse, error) {
+func DbRainhubSearchMemberLogsWithCount(c *gin.Context, req *api.SearchMemberLogCountRequest) (*api.SearchMemberLogCountResponse, error) {
 	err := validateReq(req)
 	if err != nil {
 		return nil, err
@@ -50,92 +48,29 @@ func DbRainhubSearchMemberLogsWithCount(c *gin.Context, req api.SearchMemberLogC
 	if req.Buckets > 0 {
 		buckets = req.Buckets
 	}
-	interval := search_time.GetInterval(req.StartTime, req.EndTime, buckets)
-
-	var buf bytes.Buffer
-	query := map[string]interface{}{
-		"from":             req.From,
-		"size":             size,
-		"track_total_hits": true,
-		"query": map[string]interface{}{
-			"bool": map[string]interface{}{
-				"filter": []interface{}{
-					// bool-filter
-					map[string]interface{}{"bool": map[string]interface{}{
-						"filter": []interface{}{
-							map[string]interface{}{"match": map[string]interface{}{
-								"service.type": dbType,
-							}},
-							map[string]interface{}{"match": map[string]interface{}{
-								"instance": fmt.Sprintf("%s:%d", dbIp, dbPort),
-							}},
-						},
-					}},
-
-					// range
-					map[string]interface{}{"range": map[string]interface{}{
-						"@timestamp": map[string]interface{}{
-							"format": "strict_date_optional_time",
-							"gte":    req.StartTime,
-							"lte":    req.EndTime,
-						},
-					}},
-				},
-			},
-		},
-		"aggs": map[string]interface{}{
-			"logs": map[string]interface{}{
-				"date_histogram": map[string]interface{}{
-					"field":          "@timestamp",
-					"fixed_interval": interval,
-					"time_zone":      "Asia/Shanghai",
-					"min_doc_count":  1,
-					"format":         "yyyy-MM-dd hh:mm:ss",
-				},
-			},
+	param := &es.SlowlogQuerierParam{
+		Index:   indexName,
+		Begin:   req.StartTime,
+		End:     req.EndTime,
+		Buckets: buckets,
+		Size:    size,
+		From:    req.From,
+		Cond: map[string]interface{}{
+			"service.type": dbType,
+			"instance":     fmt.Sprintf("%s:%d", dbIp, dbPort),
 		},
 	}
-
-	if err := json.NewEncoder(&buf).Encode(query); err != nil {
-		return nil, err
-	}
-
-	_, es := GetRateLimiterAndEsClient(c)
-	res, err := es.Search(
-		es.Search.WithContext(c),
-		es.Search.WithIndex(indexName),
-		es.Search.WithBody(&buf),
-		es.Search.WithTrackTotalHits(true),
-		es.Search.WithPretty(),
-	)
+	searchRes, err := es.NewSlowlogQuerier(es.GetESClient()).Query(c, param)
 	if err != nil {
-		return nil, err
-	}
-	defer res.Body.Close()
-
-	if res.IsError() {
-		var e map[string]interface{}
-		if err := json.NewDecoder(res.Body).Decode(&e); err != nil {
-			return nil, err
-		} else {
-			return nil, errors.FilebeatSearchError(e["error"].(map[string]interface{})["reason"].(string))
-		}
-	}
-
-	searchRes := new(api.SearchMemberLogCountResponse)
-	unm := jsonpb.Unmarshaler{
-		AllowUnknownFields: true,
-	}
-	if err := unm.Unmarshal(res.Body, searchRes); err != nil {
 		return nil, err
 	}
 	searchRes.From = req.From
 	searchRes.Size = req.Size
-	searchRes.Aggregations.Interval = interval
+	searchRes.Aggregations.Interval = search_time.GetInterval(req.StartTime, req.EndTime, buckets)
 	return searchRes, nil
 }
 
-func validateReq(req api.SearchMemberLogCountRequest) error {
+func validateReq(req *api.SearchMemberLogCountRequest) error {
 	// time validate
 	s := req.StartTime
 	st, err := time.ParseInLocation("2006-01-02T15:04:05Z", s, time.Local)

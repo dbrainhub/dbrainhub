@@ -1,66 +1,99 @@
 package server
 
 import (
+	"fmt"
 	"sync"
 	"time"
 
 	"github.com/dbrainhub/dbrainhub/configs"
-	"github.com/dbrainhub/dbrainhub/model"
+	"github.com/dbrainhub/dbrainhub/model/es"
 	"github.com/dbrainhub/dbrainhub/utils/logger"
+	"github.com/dbrainhub/dbrainhub/utils/rate_limit"
+	"github.com/dbrainhub/dbrainhub/utils/search_time"
 )
 
-type ESClientAsync interface {
-	// send async and will logger error when send failed
-	Send(msg *model.ESMessage)
+type ESClient interface {
+	Send(msg []*es.ESMessage) error
+}
+type ESClientWithRateLimiter interface {
+	ESClient
+	rate_limit.RateLimiter
 }
 
-var defaultEsClientAsync ESClientAsync
-
-func GetDefaultEsClientAsync() ESClientAsync {
-	return defaultEsClientAsync
+func GetDefaultAsyncESClient() ESClient {
+	return defaultAsyncEsClient
 }
 
-func InitDefaultEsClientAsync(serverConf *configs.ServerConfig) error {
-	client, err := model.NewEsClient(serverConf.OutputServer.EsAddresses)
-	if err != nil {
-		return err
+func GetDefaultESClientWithRateLimiter() ESClientWithRateLimiter {
+	return defaultEsClientWithRateLimiter
+}
+
+func InitDefaultESClient(serverConf *configs.ServerConfig) error {
+	defaultEsClientWithRateLimiter = &esClientWithRateLimit{
+		ESSender:                 es.NewESSender(es.GetESClient()),
+		SlidingWindowRateLimiter: rate_limit.NewSlidingWindowRateLimiter(int64(serverConf.OutputServer.QpsThreshold)),
 	}
 
-	esClientAsync := &esClientAsync{
-		client:    client,
+	defaultAsyncEsClient = &asyncESClient{
+		client:    es.NewESSender(es.GetESClient()),
 		batchSize: serverConf.OutputServer.ESBatchSize,
 		interval:  time.Duration(serverConf.OutputServer.ESIntervalMs) * time.Millisecond,
 	}
-	defaultEsClientAsync = esClientAsync
+	go defaultAsyncEsClient.startSendAsync()
 
-	go esClientAsync.sendAsync()
 	return nil
 }
 
-type esClientAsync struct {
-	client    model.EsSender
+// storage for indices such as cpu/mem
+func GetIndicesIndexName() string {
+	indexPrefix := configs.GetGlobalServerConfig().OutputServer.IndicesIndexPrefix
+	year, week, _ := search_time.GetYearAndWeek(time.Now().Format("2006-01-02T15:04:05Z"))
+	return fmt.Sprintf("%s%d-%dw", indexPrefix, year, week)
+}
+
+func GetQueryIndicesIndexName() string {
+	indexPrefix := configs.GetGlobalServerConfig().OutputServer.IndicesIndexPrefix
+	return fmt.Sprintf("%s*", indexPrefix)
+}
+
+var defaultAsyncEsClient *asyncESClient
+var defaultEsClientWithRateLimiter *esClientWithRateLimit
+
+type esClientWithRateLimit struct {
+	es.ESSender
+	*rate_limit.SlidingWindowRateLimiter
+}
+
+func (e *esClientWithRateLimit) Send(msgs []*es.ESMessage) error {
+	return e.ESSender.SendBatch(msgs)
+}
+
+type asyncESClient struct {
+	client    es.ESSender
 	batchSize int
 	interval  time.Duration
 
 	sync.Mutex
-	buffer []*model.ESMessage
+	buffer []*es.ESMessage
 }
 
-func (e *esClientAsync) Send(msg *model.ESMessage) {
+func (e *asyncESClient) Send(msg []*es.ESMessage) error {
 	e.Lock()
-	e.buffer = append(e.buffer, msg)
+	e.buffer = append(e.buffer, msg...)
 	if len(e.buffer) < e.batchSize {
 		e.Unlock()
-		return
+		return nil
 	}
 
 	buffer := e.copyBuffer()
 	e.Unlock()
 	e.sendSync(buffer)
+	return nil
 }
 
-func (e *esClientAsync) sendAsync() {
+func (e *asyncESClient) startSendAsync() {
 	tick := time.NewTicker(e.interval)
+
 	for {
 		select {
 		case <-tick.C:
@@ -73,15 +106,15 @@ func (e *esClientAsync) sendAsync() {
 }
 
 // with lock
-func (e *esClientAsync) copyBuffer() []*model.ESMessage {
-	var res []*model.ESMessage
+func (e *asyncESClient) copyBuffer() []*es.ESMessage {
+	var res []*es.ESMessage
 	res = append(res, e.buffer...)
 
 	e.buffer = e.buffer[:0]
 	return res
 }
 
-func (e *esClientAsync) sendSync(msgs []*model.ESMessage) {
+func (e *asyncESClient) sendSync(msgs []*es.ESMessage) {
 	if len(msgs) == 0 {
 		return
 	}

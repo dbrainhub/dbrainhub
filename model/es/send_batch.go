@@ -1,4 +1,4 @@
-package model
+package es
 
 import (
 	"bytes"
@@ -8,35 +8,21 @@ import (
 	esClient "github.com/elastic/go-elasticsearch/v8"
 )
 
-type (
-	ESClient interface {
-		EsSender
-		EsAvgAggs
-	}
-)
-
-type EsSender interface {
+type ESSender interface {
 	SendBatch(msgs []*ESMessage) error
 }
 
-func NewEsClient(addresses []string) (ESClient, error) {
-	esCfg := esClient.Config{
-		Addresses: addresses,
-	}
-	client, err := esClient.NewClient(esCfg)
-	if err != nil {
-		return nil, err
-	}
-	return &esClientImpl{
+func NewESSender(client *esClient.Client) ESSender {
+	return &esSenderImpl{
 		client: client,
-	}, nil
+	}
 }
 
-type esClientImpl struct {
+type esSenderImpl struct {
 	client *esClient.Client
 }
 
-func (e *esClientImpl) SendBatch(msgs []*ESMessage) error {
+func (e *esSenderImpl) SendBatch(msgs []*ESMessage) error {
 	if len(msgs) == 0 {
 		return nil
 	}
@@ -80,9 +66,10 @@ type AgentIndexData struct {
 	DiskRatio float64 `json:"disk_ratio"`
 	QPS       float64 `json:"qps"`
 	TPS       float64 `json:"tps"`
+	Cluster   string  `json:"cluster"`
 }
 
 type ESMessage struct {
-	Meta interface{}
+	Meta *ESMeta
 	Data interface{}
 }

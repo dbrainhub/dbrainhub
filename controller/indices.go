@@ -6,9 +6,9 @@ import (
 	"time"
 
 	"github.com/dbrainhub/dbrainhub/api"
-	"github.com/dbrainhub/dbrainhub/configs"
 	"github.com/dbrainhub/dbrainhub/errors"
-	"github.com/dbrainhub/dbrainhub/model"
+	"github.com/dbrainhub/dbrainhub/model/es"
+	"github.com/dbrainhub/dbrainhub/server"
 	"github.com/dbrainhub/dbrainhub/utils/logger"
 	"github.com/gin-gonic/gin"
 )
@@ -23,18 +23,21 @@ func GetInstanceIndices(c *gin.Context, req *api.GetInstanceIndicesRequest) (*ap
 		return nil, errors.InvalidTimeDuration("invalid to: %s", req.To)
 	}
 
-	client, err := model.NewEsClient(configs.GetGlobalServerConfig().OutputServer.EsAddresses)
-	if err != nil {
-		logger.Errorf("GetInstanceIndices NewEsClient error, err: %v", err)
-		return nil, errors.ConnectToESFailed("NewEsClient error")
-	}
-
 	var res api.GetInstanceIndicesResponse
 	var wg sync.WaitGroup
 
 	queryAvg := func(ctx context.Context, field string, res *[]*api.GetInstanceIndicesResponse_IndexValue) {
 		defer wg.Done()
-		avgs, err := client.AggregateAvg(ctx, field, begin, end, map[string]interface{}{"ip": req.Host, "port": req.Port})
+
+		client := es.NewIndexQuerier(es.GetESClient())
+		avgs, err := client.Query(ctx, &es.IndexQuerierParam{
+			Index:    server.GetQueryIndicesIndexName(),
+			AggField: field,
+			Begin:    begin,
+			End:      end,
+			Buckets:  req.Buckets,
+			Cond:     map[string]interface{}{"ip": req.Host, "port": req.Port},
+		})
 		if err != nil {
 			logger.Errorf("GetInstanceIndices AggregateAvg %s error, err: %v, req: %v", field, err, req)
 			return
@@ -54,7 +57,7 @@ func GetInstanceIndices(c *gin.Context, req *api.GetInstanceIndicesRequest) (*ap
 
 }
 
-func esAvgResultsToApiIndexValues(avgResults []*model.AvgAggsResult) []*api.GetInstanceIndicesResponse_IndexValue {
+func esAvgResultsToApiIndexValues(avgResults []*es.IndexQuerierResult) []*api.GetInstanceIndicesResponse_IndexValue {
 	var res []*api.GetInstanceIndicesResponse_IndexValue
 	for _, avgRes := range avgResults {
 		res = append(res, &api.GetInstanceIndicesResponse_IndexValue{

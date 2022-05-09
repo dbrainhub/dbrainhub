@@ -33,7 +33,7 @@ func main() {
 
 	logger.InitLog(config.LogInfo.LogDir, config.LogInfo.Name, config.LogInfo.Level)
 
-	if err := server.InitDefaultEsClientAsync(config); err != nil {
+	if err := server.InitDefaultESClient(config); err != nil {
 		logger.Errorf("InitDefaultEsClientSync err: %v, exit...", err)
 		os.Exit(1)
 	}
