@@ -48,7 +48,12 @@ func InitDefaultESClient(serverConf *configs.ServerConfig) error {
 func GetIndicesIndexName() string {
 	indexPrefix := configs.GetGlobalServerConfig().OutputServer.IndicesIndexPrefix
 	year, week, _ := search_time.GetYearAndWeek(time.Now().Format("2006-01-02T15:04:05Z"))
-	return fmt.Sprintf("%s%d-%d", indexPrefix, year, week)
+	return fmt.Sprintf("%s%d-%dw", indexPrefix, year, week)
+}
+
+func GetQueryIndicesIndexName() string {
+	indexPrefix := configs.GetGlobalServerConfig().OutputServer.IndicesIndexPrefix
+	return fmt.Sprintf("%s*", indexPrefix)
 }
 
 var defaultAsyncEsClient *asyncESClient

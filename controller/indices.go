@@ -31,7 +31,7 @@ func GetInstanceIndices(c *gin.Context, req *api.GetInstanceIndicesRequest) (*ap
 
 		client := es.NewIndexQuerier(es.GetESClient())
 		avgs, err := client.Query(ctx, &es.IndexQuerierParam{
-			Index:    server.GetIndicesIndexName(),
+			Index:    server.GetQueryIndicesIndexName(),
 			AggField: field,
 			Begin:    begin,
 			End:      end,
