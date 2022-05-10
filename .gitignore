@@ -1,0 +1,5 @@
+*.swp
+.idea
+.DS_Store
+cmd/server/dbrainhub.log
+.vscode

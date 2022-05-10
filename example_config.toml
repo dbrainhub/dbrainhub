@@ -1,0 +1,23 @@
+[server]
+address = "127.0.0.1:1502"
+
+[db]
+# dialect should be mysql, postgres, sqlserver or sqlite
+dialect = "mysql"
+user = "dbrainhub"
+password = "dbrainhub"
+host = "127.0.0.1"
+port = 3306
+database = "dbrainhub"
+
+[log_info]
+level = "debug"
+log_dir = "."
+name = "dbrainhub.log"
+
+[output_server]
+es_addresses = ["http://127.0.0.1:9200"]
+qps_threshold = 100
+es_batch_size = 100
+es_interval_ms = 2000
+indices_index_prefix = "dbrainhub-indices-"
