@@ -60,7 +60,9 @@ func (s *slowlogQuerier) Query(ctx context.Context, param *SlowlogQuerierParam) 
 			},
 		},
 		"aggs": map[string]interface{}{
-			"logs": genHistogram(param.Begin, param.End, param.Buckets),
+			"logs": map[string]interface{}{
+				"date_histogram": genHistogram(param.Begin, param.End, param.Buckets),
+			},
 		},
 	}
 
