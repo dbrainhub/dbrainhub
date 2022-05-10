@@ -43,10 +43,12 @@ func genRange(from, to string) map[string]interface{} {
 
 func genHistogram(from, to string, buckets int64) map[string]interface{} {
 	return map[string]interface{}{
-		"field":          "@timestamp",
-		"fixed_interval": search_time.GetInterval(from, to, buckets),
-		"min_doc_count":  1, // ignore count == 0
-		"format":         "yyyy-MM-dd HH:mm:ss",
-		"time_zone":      "Asia/Shanghai",
+		"date_histogram": map[string]interface{}{
+			"field":          "@timestamp",
+			"fixed_interval": search_time.GetInterval(from, to, buckets),
+			"min_doc_count":  1, // ignore count == 0
+			"format":         "yyyy-MM-dd HH:mm:ss",
+			"time_zone":      "Asia/Shanghai",
+		},
 	}
 }

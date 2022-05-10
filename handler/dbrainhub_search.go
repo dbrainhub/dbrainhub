@@ -12,5 +12,5 @@ func DbRainhubSearchMemberLogsWithCount(c *gin.Context) (interface{}, error) {
 	if err != nil {
 		return nil, BadRequestError("input unsharmal err: %v", err)
 	}
-	return controller.DbRainhubSearchMemberLogsWithCount(c, req)
+	return controller.DbRainhubSearchMemberLogsWithCount(c, &req)
 }
